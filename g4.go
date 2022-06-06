@@ -13,7 +13,8 @@ const (
 type Color byte
 
 const (
-	Yellow Color = iota
+	Empty Color = iota
+	Yellow
 	Red
 )
 
