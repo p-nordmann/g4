@@ -6,8 +6,8 @@ import (
 	"testing"
 )
 
-var exampleBoard = [g4.RowCount]g4.Column{
-	g4.Column(g4.Yellow) | g4.Column(g4.Red)<<1,
+var exampleBoard = [g4.ColumnCount]g4.Column{
+	g4.Column(g4.Yellow) | g4.Column(g4.Red)<<8,
 	g4.Column(g4.Red),
 	0,
 	0,
@@ -55,12 +55,12 @@ func TestCorrectBoardFromString(t *testing.T) {
 			in: "UP yy/rr/yryr/rrrr/yrry/r/y/r",
 			out: Board{
 				gravity: g4.UP,
-				board: [g4.RowCount]g4.Column{
-					g4.Column(g4.Yellow) | g4.Column(g4.Yellow)<<1,
-					g4.Column(g4.Red) | g4.Column(g4.Red)<<1,
-					g4.Column(g4.Yellow) | g4.Column(g4.Red)<<1 | g4.Column(g4.Yellow)<<2 | g4.Column(g4.Red)<<3,
-					g4.Column(g4.Red) | g4.Column(g4.Red)<<1 | g4.Column(g4.Red)<<2 | g4.Column(g4.Red)<<3,
-					g4.Column(g4.Yellow) | g4.Column(g4.Red)<<1 | g4.Column(g4.Red)<<2 | g4.Column(g4.Yellow)<<3,
+				board: [g4.ColumnCount]g4.Column{
+					g4.Column(g4.Yellow) | g4.Column(g4.Yellow)<<8,
+					g4.Column(g4.Red) | g4.Column(g4.Red)<<8,
+					g4.Column(g4.Yellow) | g4.Column(g4.Red)<<8 | g4.Column(g4.Yellow)<<16 | g4.Column(g4.Red)<<24,
+					g4.Column(g4.Red) | g4.Column(g4.Red)<<8 | g4.Column(g4.Red)<<16 | g4.Column(g4.Red)<<24,
+					g4.Column(g4.Yellow) | g4.Column(g4.Red)<<8 | g4.Column(g4.Red)<<16 | g4.Column(g4.Yellow)<<24,
 					g4.Column(g4.Red),
 					g4.Column(g4.Yellow),
 					g4.Column(g4.Red),

@@ -286,4 +286,40 @@ func TestApplyCorrectMoves(t *testing.T) {
 	}
 }
 
+func TestApplyInvalidMoves(t *testing.T) {
+	examples := []struct {
+		board string
+		color g4.Color
+		move  g4.Move
+		err   error
+	}{
+		{
+			board: "UP ///////",
+			color: g4.Yellow,
+			move:  g4.TiltMove(g4.UP),
+			err:   g4.ErrorInvalidMove{},
+		},
+		{
+			board: "UP ryryryry///////",
+			color: g4.Yellow,
+			move:  g4.TokenMove(g4.Yellow, 0),
+			err:   g4.ErrorInvalidMove{},
+		},
+	}
+	for k, ex := range examples {
+		board, err := simulation.FromString(ex.board)
+		if err != nil {
+			t.Errorf("example %d: error in FromString: %v", k, err)
+		}
+		game, err := simulation.FromBoard(board, ex.color)
+		if err != nil {
+			t.Errorf("example %d: error in FromBoard: %v", k, err)
+		}
+		_, _, err = game.Apply(ex.move)
+		if err != ex.err {
+			t.Errorf("example %d: incorrect error: got %v but want %v", k, err, ex.err)
+		}
+	}
+}
+
 // TODO(Pierre-Louis): test perft.
