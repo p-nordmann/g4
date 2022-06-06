@@ -3,7 +3,7 @@
 package g4
 
 const (
-	RowCount = 8
+	ColumnCount = 8
 )
 
 // Color describes the color of a token.

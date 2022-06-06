@@ -30,3 +30,9 @@ func (err ErrorGameOver) Error() string {
 		return "game is over - draw"
 	}
 }
+
+type ErrorInvalidMove struct{}
+
+func (err ErrorInvalidMove) Error() string {
+	return "invalid move"
+}
