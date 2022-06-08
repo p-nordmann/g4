@@ -6,6 +6,9 @@ import (
 	"strings"
 )
 
+// TODO:   Board implementation must go.
+//		 + Must use interface g4.Board when created.
+
 // Board describes a board state.
 //
 // It is not aware of concepts of player and move.

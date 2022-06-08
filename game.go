@@ -1,5 +1,7 @@
 package g4
 
+// TODO: Board interface.
+
 // Generator is the interface for generating a list of possible moves.
 type Generator interface {
 	Generate() ([]Move, error)
