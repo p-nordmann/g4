@@ -1,40 +1,37 @@
 package g4
 
-// TODO: Board interface.
-
-// Generator is the interface for generating a list of possible moves.
-type Generator interface {
-	Generate() ([]Move, error)
-}
-
 // Game is supposed to hold the data about the current game state.
 //
-// It can be updated using moves.
+// It can generate a list of possible move in its current state and it can be updated using moves.
+//
 // It can be queried for display information.
+//
 // TODO: display information.
 type Game interface {
 	// Apply performs a move from a game state.
 	// It returns the new game state and a generator for next possible moves.
-	Apply(Move) (Game, Generator, error)
+	Apply(Move) (Game, error)
+	Generate() ([]Move, error)
 }
 
-type ErrorGameOver struct {
-	Winner Color
-}
+type Board interface {
+	// RotateLeft applies `times` left rotations on the board.
+	//
+	// It does not make the token drop according to new gravity.
+	RotateLeft(times int) Board
 
-func (err ErrorGameOver) Error() string {
-	switch err.Winner {
-	case Yellow:
-		return "game is over - yellow wins"
-	case Red:
-		return "game is over - red wins"
-	default:
-		return "game is over - draw"
-	}
-}
+	// ApplyGravity makes the token drop according to gravity.
+	ApplyGravity() Board
 
-type ErrorInvalidMove struct{}
+	// AddToken adds a token on top of requested column.
+	AddToken(column int, color Color) Board
 
-func (err ErrorInvalidMove) Error() string {
-	return "invalid move"
+	// HasYellowConnect4 returns whether the board has a connect 4 with yellow tokens.
+	HasYellowConnect4() bool
+
+	// HasRedConnect4 returns whether the board has a connect 4 with red tokens.
+	HasRedConnect4() bool
+
+	// Heights returns a list of heights for all the columns.
+	Heights() [8]int
 }
