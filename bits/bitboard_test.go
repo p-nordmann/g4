@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestFromString(t *testing.T) {
+func TestBitboardFromString(t *testing.T) {
 	one := bitboard(1)
 	ones8 := bitboard(255)
 	examples := []struct {
@@ -35,7 +35,7 @@ func TestFromString(t *testing.T) {
 	}
 }
 
-func TestFromStringError(t *testing.T) {
+func TestBitboardFromStringError(t *testing.T) {
 	examples := []string{
 		"x7|8|8|8|8|8|8",
 		"x6x|8|8|8|8|xxxxxxxxx|8|8",
@@ -75,6 +75,68 @@ func TestNorth(t *testing.T) {
 		out, _ := bitboardFromString(ex.out)
 		if in.North() != out {
 			t.Errorf("example %d: got %v but want %v", k, in.North(), out)
+		}
+	}
+}
+
+func TestNorth2(t *testing.T) {
+	examples := []struct {
+		in  string
+		out string
+	}{
+		{
+			in:  "x7|8|8|8|8|8|8|8",
+			out: "2x5|8|8|8|8|8|8|8",
+		},
+		{
+			in:  "6xx|8|8|8|8|8|8|5xxx",
+			out: "8|8|8|8|8|8|8|7x",
+		},
+		{
+			in:  "8|1x6|8|8|8|8|8|8",
+			out: "8|3x4|8|8|8|8|8|8",
+		},
+		{
+			in:  "8|8|3x4|8|8|8|8|8",
+			out: "8|8|5x2|8|8|8|8|8",
+		},
+	}
+	for k, ex := range examples {
+		in, _ := bitboardFromString(ex.in)
+		out, _ := bitboardFromString(ex.out)
+		if in.North2() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.North2(), out)
+		}
+	}
+}
+
+func TestNorth3(t *testing.T) {
+	examples := []struct {
+		in  string
+		out string
+	}{
+		{
+			in:  "x7|8|8|8|8|8|8|8",
+			out: "3x4|8|8|8|8|8|8|8",
+		},
+		{
+			in:  "5xxx|8|8|8|8|8|8|4xxxx",
+			out: "8|8|8|8|8|8|8|7x",
+		},
+		{
+			in:  "8|1x6|8|8|8|8|8|8",
+			out: "8|4x3|8|8|8|8|8|8",
+		},
+		{
+			in:  "8|8|3x4|8|8|8|8|8",
+			out: "8|8|6x1|8|8|8|8|8",
+		},
+	}
+	for k, ex := range examples {
+		in, _ := bitboardFromString(ex.in)
+		out, _ := bitboardFromString(ex.out)
+		if in.North3() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.North3(), out)
 		}
 	}
 }
@@ -172,6 +234,68 @@ func TestEast(t *testing.T) {
 	}
 }
 
+func TestEast2(t *testing.T) {
+	examples := []struct {
+		in  string
+		out string
+	}{
+		{
+			in:  "8|8|8|8|8|8|8|8",
+			out: "8|8|8|8|8|8|8|8",
+		},
+		{
+			in:  "x7|8|8|8|8|8|8|8",
+			out: "8|8|x7|8|8|8|8|8",
+		},
+		{
+			in:  "8|8|8|8|8|1x6|8|8",
+			out: "8|8|8|8|8|8|8|1x6",
+		},
+		{
+			in:  "8|8|8|8|8|8|x7|3x4",
+			out: "8|8|8|8|8|8|8|8",
+		},
+	}
+	for k, ex := range examples {
+		in, _ := bitboardFromString(ex.in)
+		out, _ := bitboardFromString(ex.out)
+		if in.East2() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.East2(), out)
+		}
+	}
+}
+
+func TestEast3(t *testing.T) {
+	examples := []struct {
+		in  string
+		out string
+	}{
+		{
+			in:  "8|8|8|8|8|8|8|8",
+			out: "8|8|8|8|8|8|8|8",
+		},
+		{
+			in:  "x7|8|8|8|8|8|8|8",
+			out: "8|8|8|x7|8|8|8|8",
+		},
+		{
+			in:  "8|8|8|8|1x6|1x6|8|8",
+			out: "8|8|8|8|8|8|8|1x6",
+		},
+		{
+			in:  "8|8|8|8|8|7x|x7|3x4",
+			out: "8|8|8|8|8|8|8|8",
+		},
+	}
+	for k, ex := range examples {
+		in, _ := bitboardFromString(ex.in)
+		out, _ := bitboardFromString(ex.out)
+		if in.East3() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.East3(), out)
+		}
+	}
+}
+
 func TestNorthWest(t *testing.T) {
 	examples := []struct {
 		in  string
@@ -195,6 +319,60 @@ func TestNorthWest(t *testing.T) {
 	}
 }
 
+func TestNorthWest2(t *testing.T) {
+	examples := []struct {
+		in  string
+		out string
+	}{
+		{
+			in:  "x7|8|8|8|x7|8|8|8",
+			out: "8|8|2x5|8|8|8|8|8",
+		},
+		{
+			in:  "8|x7|8|3x4|8|5xxx|8|8",
+			out: "8|5x2|8|7x|8|8|8|8",
+		},
+		{
+			in:  "8|8|x7|8|8|8|8|8",
+			out: "2x5|8|8|8|8|8|8|8",
+		},
+	}
+	for k, ex := range examples {
+		in, _ := bitboardFromString(ex.in)
+		out, _ := bitboardFromString(ex.out)
+		if in.NorthWest2() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.NorthWest2(), out)
+		}
+	}
+}
+
+func TestNorthWest3(t *testing.T) {
+	examples := []struct {
+		in  string
+		out string
+	}{
+		{
+			in:  "x7|8|8|8|x7|8|8|8",
+			out: "8|3x4|8|8|8|8|8|8",
+		},
+		{
+			in:  "8|x7|8|3x4|8|4xxxx|8|8",
+			out: "6x1|8|7x|8|8|8|8|8",
+		},
+		{
+			in:  "8|8|8|x7|8|8|8|8",
+			out: "3x4|8|8|8|8|8|8|8",
+		},
+	}
+	for k, ex := range examples {
+		in, _ := bitboardFromString(ex.in)
+		out, _ := bitboardFromString(ex.out)
+		if in.NorthWest3() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.NorthWest3(), out)
+		}
+	}
+}
+
 func TestNorthEast(t *testing.T) {
 	examples := []struct {
 		in  string
@@ -214,6 +392,60 @@ func TestNorthEast(t *testing.T) {
 		out, _ := bitboardFromString(ex.out)
 		if in.NorthEast() != out {
 			t.Errorf("example %d: got %v but want %v", k, in.NorthEast(), out)
+		}
+	}
+}
+
+func TestNorthEast2(t *testing.T) {
+	examples := []struct {
+		in  string
+		out string
+	}{
+		{
+			in:  "8|8|8|8|8|x5x1|x7|x7",
+			out: "8|8|8|8|8|8|8|2x5",
+		},
+		{
+			in:  "x7|8|8|8|8|7x|8|8",
+			out: "8|8|2x5|8|8|8|8|8",
+		},
+		{
+			in:  "8|8|8|8|8|4xxxx|8|8",
+			out: "8|8|8|8|8|8|8|6xx",
+		},
+	}
+	for k, ex := range examples {
+		in, _ := bitboardFromString(ex.in)
+		out, _ := bitboardFromString(ex.out)
+		if in.NorthEast2() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.NorthEast2(), out)
+		}
+	}
+}
+
+func TestNorthEast3(t *testing.T) {
+	examples := []struct {
+		in  string
+		out string
+	}{
+		{
+			in:  "8|8|8|8|8|x5x1|x7|x7",
+			out: "8|8|8|8|8|8|8|8",
+		},
+		{
+			in:  "x7|8|8|8|8|7x|8|8",
+			out: "8|8|8|3x4|8|8|8|8",
+		},
+		{
+			in:  "8|8|8|8|4xxxx|8|8|8",
+			out: "8|8|8|8|8|8|8|7x",
+		},
+	}
+	for k, ex := range examples {
+		in, _ := bitboardFromString(ex.in)
+		out, _ := bitboardFromString(ex.out)
+		if in.NorthEast3() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.NorthEast3(), out)
 		}
 	}
 }

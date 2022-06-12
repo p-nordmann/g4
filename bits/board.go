@@ -21,7 +21,16 @@ type Board struct {
 	redBits    bitboard
 }
 
-// TODO: add a test for FromString and documentation.
+// FromString returns a board built from a description string.
+//
+// Format is the following:
+// col1|col2|col3|...|col8
+// Where each column is an alternation of 'y', 'r' and integers,
+// 'y' and 'r' respectively denoting a yellow or red token and
+// an integer denoting a sequence of 0.
+//
+// NB: multiple integers one after the other is also valid.
+// example: y7|... is equivalent to y1123|... or r43|...
 func FromString(s string) (b Board, err error) {
 	// Parse yellow bits.
 	yellowString := strings.ReplaceAll(
@@ -35,15 +44,13 @@ func FromString(s string) (b Board, err error) {
 	}
 
 	// Parse red bits.
+	// NB: no need to check for errors, as it can never happen here.
 	redString := strings.ReplaceAll(
 		strings.ReplaceAll(s, "r", "x"),
 		"y",
 		"1",
 	)
-	b.redBits, err = bitboardFromString(redString)
-	if err != nil {
-		return b, fmt.Errorf("error parsing red bits: %w", err)
-	}
+	b.redBits, _ = bitboardFromString(redString)
 
 	return
 }
@@ -60,4 +67,14 @@ func (b Board) Heights() [8]int {
 		((b.yellowBits | b.redBits) & col6Mask).Count(),
 		((b.yellowBits | b.redBits) & col7Mask).Count(),
 	}
+}
+
+// HasYellowConnect4 returns whether the board has a connect 4 with yellow tokens.
+func (b Board) HasYellowConnect4() bool {
+	return b.yellowBits.HasConnect4()
+}
+
+// HasRedConnect4 returns whether the board has a connect 4 with red tokens.
+func (b Board) HasRedConnect4() bool {
+	return b.redBits.HasConnect4()
 }

@@ -8,9 +8,11 @@ import (
 type bitboard uint64
 
 const (
-	one       bitboard = 1
-	northMask bitboard = ^(one | one<<8 | one<<16 | one<<24 | one<<32 | one<<40 | one<<48 | one<<56)
-	southMask bitboard = ^(^northMask << 7)
+	one        bitboard = 1
+	northMask  bitboard = ^(one | one<<8 | one<<16 | one<<24 | one<<32 | one<<40 | one<<48 | one<<56)
+	north2Mask bitboard = ^(^northMask | (^northMask << 1))
+	north3Mask bitboard = ^(^northMask | (^northMask << 1) | (^northMask << 2))
+	southMask  bitboard = ^(^northMask << 7)
 )
 
 // bitboardFromString returns a bitboard built from a description string.
@@ -67,6 +69,14 @@ func (b bitboard) North() bitboard {
 	return (b << 1) & northMask
 }
 
+func (b bitboard) North2() bitboard {
+	return (b << 2) & north2Mask
+}
+
+func (b bitboard) North3() bitboard {
+	return (b << 3) & north3Mask
+}
+
 func (b bitboard) West() bitboard {
 	return b >> 8
 }
@@ -79,23 +89,45 @@ func (b bitboard) East() bitboard {
 	return b << 8
 }
 
+func (b bitboard) East2() bitboard {
+	return b << 16
+}
+
+func (b bitboard) East3() bitboard {
+	return b << 24
+}
+
 func (b bitboard) NorthWest() bitboard {
 	return (b >> 7) & northMask
+}
+
+func (b bitboard) NorthWest2() bitboard {
+	return (b >> 14) & north2Mask
+}
+
+func (b bitboard) NorthWest3() bitboard {
+	return (b >> 21) & north3Mask
 }
 
 func (b bitboard) NorthEast() bitboard {
 	return (b << 9) & northMask
 }
 
+func (b bitboard) NorthEast2() bitboard {
+	return (b << 18) & north2Mask
+}
+
+func (b bitboard) NorthEast3() bitboard {
+	return (b << 27) & north3Mask
+}
+
 // HasConnect4 returns whether the bitboard has a connect 4 pattern.
 // The pattern can occur horizontally, vertically or diagonally.
-//
-// TODO: can be improved with North2 and North3 functions, etc.
 func (b bitboard) HasConnect4() bool {
-	v4 := b & b.North() & b.North().North() & b.North().North().North()
-	h4 := b & b.East() & b.East().East() & b.East().East().East()
-	ld4 := b & b.NorthWest() & b.NorthWest().NorthWest() & b.NorthWest().NorthWest().NorthWest()
-	rd4 := b & b.NorthEast() & b.NorthEast().NorthEast() & b.NorthEast().NorthEast().NorthEast()
+	v4 := b & b.North() & b.North2() & b.North3()
+	h4 := b & b.East() & b.East2() & b.East3()
+	ld4 := b & b.NorthWest() & b.NorthWest2() & b.NorthWest3()
+	rd4 := b & b.NorthEast() & b.NorthEast2() & b.NorthEast3()
 	return (v4 | h4 | ld4 | rd4) != 0
 }
 
