@@ -55,7 +55,7 @@ func TestRotateLeft(t *testing.T) {
 	}
 	for k, ex := range examples {
 		got, _ := bits.FromString(ex.in)
-		got = got.RotateLeft(ex.times)
+		got = got.RotateLeft(ex.times).(bits.Board)
 		want, _ := bits.FromString(ex.out)
 		if got != want {
 			t.Errorf("example %d: got != want", k)
@@ -79,7 +79,7 @@ func TestApplyGravity(t *testing.T) {
 	}
 	for k, ex := range examples {
 		got, _ := bits.FromString(ex.in)
-		got = got.ApplyGravity()
+		got = got.ApplyGravity().(bits.Board)
 		want, _ := bits.FromString(ex.out)
 		if got != want {
 			t.Errorf("example %d: got != want", k)
@@ -121,7 +121,7 @@ func TestAddToken(t *testing.T) {
 	}
 	for k, ex := range examples {
 		got, _ := bits.FromString(ex.in)
-		got = got.AddToken(ex.column, ex.color)
+		got = got.AddToken(ex.column, ex.color).(bits.Board)
 		want, _ := bits.FromString(ex.out)
 		if got != want {
 			t.Errorf("example %d: got != want", k)

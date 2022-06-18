@@ -9,8 +9,11 @@ package g4
 // TODO: display information.
 type Game interface {
 	// Apply performs a move from a game state.
-	// It returns the new game state and a generator for next possible moves.
+	// The new game state is returned.
 	Apply(Move) (Game, error)
+
+	// Generate returns the list of possible moves.
+	// If the game is over, an error is supposed to be returned.
 	Generate() ([]Move, error)
 }
 
