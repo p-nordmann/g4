@@ -8,11 +8,27 @@ import (
 //
 // It does not make the token drop according to new gravity.
 func (b Board) RotateLeft(times int) Board {
+	for k := 0; k < times%4; k++ {
+		b.yellowBits = b.yellowBits.RotateLeft()
+		b.redBits = b.redBits.RotateLeft()
+	}
 	return b
 }
 
 // ApplyGravity makes the token drop according to gravity.
+//
+// Uses the naive approach:
+// 	- computes bits with a gap immediately below them
+// 	- drop one square
+// 	- iterate (8 times)
 func (b Board) ApplyGravity() Board {
+	for k := 0; k < 8; k++ {
+		gaps := ^(b.yellowBits | b.redBits)
+		yellowDrop := gaps & b.yellowBits.South()
+		b.yellowBits = (b.yellowBits ^ yellowDrop.North()) | yellowDrop
+		redDrop := gaps & b.redBits.South()
+		b.redBits = (b.redBits ^ redDrop.North()) | redDrop
+	}
 	return b
 }
 

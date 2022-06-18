@@ -64,7 +64,27 @@ func TestRotateLeft(t *testing.T) {
 }
 
 func TestApplyGravity(t *testing.T) {
-
+	examples := []struct {
+		in  string
+		out string
+	}{
+		{
+			in:  "y6r|y5r1|r4y2|rr3y2|rrry4|7y|r6r|8",
+			out: "yr6|yr6|ry6|rry5|rrry4|y7|rr6|8",
+		},
+		{
+			in:  "y1r1y1r1|1y1r1y1r|r1y1r1y1|8|rr1yy1rr|1rr1yy1r|8|r2y2ry",
+			out: "yryr4|yryr4|ryry4|8|rryyrr2|rryyr3|8|ryry4",
+		},
+	}
+	for k, ex := range examples {
+		got, _ := bits.FromString(ex.in)
+		got = got.ApplyGravity()
+		want, _ := bits.FromString(ex.out)
+		if got != want {
+			t.Errorf("example %d: got != want", k)
+		}
+	}
 }
 
 func TestAddToken(t *testing.T) {

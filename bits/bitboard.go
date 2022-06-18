@@ -135,3 +135,19 @@ func (b bitboard) HasConnect4() bool {
 func (b bitboard) Count() int {
 	return bits.OnesCount64(uint64(b))
 }
+
+// getColumn returns the byte corresponding to a column.
+func (b bitboard) getColumn(column int) byte {
+	return byte(b >> (column * 8))
+}
+
+// RotateLeft rotates the bitboard 90 degrees left.
+//
+// It proceeds column by column, using rotationLookup (lazy dev 😁).
+func (b bitboard) RotateLeft() bitboard {
+	var rotatedBitboard bitboard
+	for column := 0; column < 8; column++ {
+		rotatedBitboard |= rotationLookup[b.getColumn(column)] << column
+	}
+	return rotatedBitboard
+}

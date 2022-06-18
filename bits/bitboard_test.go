@@ -541,3 +541,79 @@ func TestCount(t *testing.T) {
 		}
 	}
 }
+
+func TestGetColumn(t *testing.T) {
+	examples := []struct {
+		in     string
+		column int
+		out    byte
+	}{
+		{
+			in:     "8|xx6|8|8|8|8|8|8",
+			column: 0,
+			out:    0,
+		},
+		{
+			in:     "8|xx6|8|8|8|8|8|8",
+			column: 1,
+			out:    0b00000011,
+		},
+		{
+			in:     "8|xx6|x1x1x1x1|8|8|8|8|8",
+			column: 2,
+			out:    0b01010101,
+		},
+		{
+			in:     "8|xx6|8|8|8|8|8|xxxxxxxx",
+			column: 7,
+			out:    255,
+		},
+	}
+	for k, ex := range examples {
+		bb, _ := bitboardFromString(ex.in)
+		out := bb.getColumn(ex.column)
+		if out != ex.out {
+			t.Errorf("example %d: got %v but want %v", k, out, ex.out)
+		}
+	}
+}
+
+func TestRotateLeft(t *testing.T) {
+	examples := []struct {
+		in  string
+		out string
+	}{
+		{
+			in:  "x7|8|8|8|8|8|8|8",
+			out: "8|8|8|8|8|8|8|x7",
+		},
+		{
+			in:  "1x6|8|8|8|8|8|8|8",
+			out: "8|8|8|8|8|8|x7|8",
+		},
+		{
+			in:  "x7|xx6|x7|8|8|8|8|8",
+			out: "8|8|8|8|8|8|1x6|xxx5",
+		},
+		{
+			in:  "xx6|8|8|8|8|8|8|8",
+			out: "8|8|8|8|8|8|x7|x7",
+		},
+		{
+			in:  "xx6|2x5|2x5|2x5|2x5|6x1|6x1|8",
+			out: "8|5xx1|8|8|8|1xxxx3|x7|x7",
+		},
+		{
+			in:  "x7|xx6|x1x5|x2x4|x3x3|x4x2|x5x1|xxxxxxxx",
+			out: "7x|6xx|5x1x|4x2x|3x3x|2x4x|1x5x|xxxxxxxx",
+		},
+	}
+	for k, ex := range examples {
+		got, _ := bitboardFromString(ex.in)
+		got = got.RotateLeft()
+		want, _ := bitboardFromString(ex.out)
+		if got != want {
+			t.Errorf("example %d: got %v but want %v", k, got, want)
+		}
+	}
+}
