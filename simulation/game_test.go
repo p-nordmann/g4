@@ -240,113 +240,143 @@ func TestGenerate(t *testing.T) {
 	}
 }
 
-// func TestApplyCorrectMoves(t *testing.T) {
-// 	examples := []struct {
-// 		before string
-// 		color  g4.Color
-// 		moves  []g4.Move
-// 		after  string
-// 	}{
-// 		{
-// 			before: "UP ///////",
-// 			color:  g4.Yellow,
-// 			moves: []g4.Move{
-// 				g4.TokenMove(g4.Yellow, 0),
-// 				g4.TokenMove(g4.Red, 0),
-// 				g4.TokenMove(g4.Yellow, 0),
-// 			},
-// 			after: "UP yry///////",
-// 		},
-// 		{
-// 			before: "UP ///////",
-// 			color:  g4.Yellow,
-// 			moves: []g4.Move{
-// 				g4.TokenMove(g4.Yellow, 0),
-// 				g4.TokenMove(g4.Red, 1),
-// 				g4.TokenMove(g4.Yellow, 2),
-// 				g4.TokenMove(g4.Red, 3),
-// 				g4.TiltMove(g4.LEFT),
-// 			},
-// 			after: "LEFT ryry///////",
-// 		},
-// 		{
-// 			before: "UP rr/y/r/yy////",
-// 			color:  g4.Yellow,
-// 			moves: []g4.Move{
-// 				g4.TiltMove(g4.LEFT),
-// 			},
-// 			after: "LEFT yryr/yr//////",
-// 		},
-// 		{
-// 			before: "UP rr/y/r/yy////",
-// 			color:  g4.Yellow,
-// 			moves: []g4.Move{
-// 				g4.TiltMove(g4.RIGHT),
-// 			},
-// 			after: "RIGHT //////ry/ryry",
-// 		},
-// 	}
-// 	for k, ex := range examples {
-// 		board, err := simulation.FromString(ex.before)
-// 		if err != nil {
-// 			t.Errorf("example %d: error in FromString (before): %v", k, err)
-// 		}
-// 		var game g4.Game
-// 		game, err = simulation.FromBoard(board, ex.color)
-// 		if err != nil {
-// 			t.Errorf("example %d: error in FromBoard: %v", k, err)
-// 		}
-// 		for _, move := range ex.moves {
-// 			game, _, err = game.Apply(move)
-// 			if err != nil {
-// 				t.Errorf("example %d: error in Apply: %v", k, err)
-// 			}
-// 		}
-// 		want, err := simulation.FromString(ex.after)
-// 		if err != nil {
-// 			t.Errorf("example %d: error in FromString (after): %v", k, err)
-// 		}
-// 		got := game.(simulation.Game).Board()
-// 		if got != want {
-// 			t.Errorf("example %d: wrong board after game moves: got %v but wanted %v", k, got, want)
-// 		}
-// 	}
-// }
+func TestApplyCorrectMoves(t *testing.T) {
+	examples := []struct {
+		in           string
+		color        g4.Color
+		direction    g4.Direction
+		moves        []g4.Move
+		out          string
+		outColor     g4.Color
+		outDirection g4.Direction
+	}{
+		{
+			in:        "8|8|8|8|8|8|8|8",
+			color:     g4.Yellow,
+			direction: g4.UP,
+			moves: []g4.Move{
+				g4.TokenMove(g4.Yellow, 0),
+				g4.TokenMove(g4.Red, 0),
+				g4.TokenMove(g4.Yellow, 0),
+			},
+			out:          "yry5|8|8|8|8|8|8|8",
+			outColor:     g4.Red,
+			outDirection: g4.UP,
+		},
+		{
+			in:        "8|8|8|8|8|8|8|8",
+			color:     g4.Yellow,
+			direction: g4.UP,
+			moves: []g4.Move{
+				g4.TokenMove(g4.Yellow, 0),
+				g4.TokenMove(g4.Red, 1),
+				g4.TokenMove(g4.Yellow, 2),
+				g4.TokenMove(g4.Red, 3),
+				g4.TiltMove(g4.LEFT),
+			},
+			out:          "ryry4|8|8|8|8|8|8|8",
+			outColor:     g4.Red,
+			outDirection: g4.LEFT,
+		},
+		{
+			in:        "rr6|y7|r7|yy6|8|8|8|8",
+			color:     g4.Yellow,
+			direction: g4.UP,
+			moves: []g4.Move{
+				g4.TiltMove(g4.LEFT),
+			},
+			out:          "yryr4|yr6|8|8|8|8|8|8",
+			outColor:     g4.Red,
+			outDirection: g4.LEFT,
+		},
+		{
+			in:        "rr6|y7|r7|yy6|8|8|8|8",
+			color:     g4.Yellow,
+			direction: g4.UP,
+			moves: []g4.Move{
+				g4.TiltMove(g4.RIGHT),
+			},
+			out:          "8|8|8|8|8|8|ry6|ryry4",
+			outColor:     g4.Red,
+			outDirection: g4.RIGHT,
+		},
+	}
+	for k, ex := range examples {
+		var game g4.Game
+		board1, err := bits.FromString(ex.in)
+		if err != nil {
+			t.Errorf("example %d: error in FromString: %v", k, err)
+		}
+		game, err = simulation.FromBoard(board1, ex.color, ex.direction)
+		if err != nil {
+			t.Errorf("example %d: error in FromBoard (in): %v", k, err)
+		}
+		for i, move := range ex.moves {
+			game, err = game.Apply(move)
+			if err != nil {
+				t.Errorf("example %d: move %d: error in Apply: %v", k, i, err)
+			}
+		}
+		board2, err := bits.FromString(ex.out)
+		if err != nil {
+			t.Errorf("example %d: error in FromString: %v", k, err)
+		}
+		want, err := simulation.FromBoard(board2, ex.outColor, ex.outDirection)
+		if err != nil {
+			t.Errorf("example %d: error in FromBoard (out): %v", k, err)
+		}
+		got := game.(simulation.Game)
+		if got != want {
+			t.Errorf("example %d: wrong game state after game moves: got %v but wanted %v", k, got, want)
+		}
+	}
+}
 
-// func TestApplyInvalidMoves(t *testing.T) {
-// 	examples := []struct {
-// 		board string
-// 		color g4.Color
-// 		move  g4.Move
-// 		err   error
-// 	}{
-// 		{
-// 			board: "UP ///////",
-// 			color: g4.Yellow,
-// 			move:  g4.TiltMove(g4.UP),
-// 			err:   g4.ErrorInvalidMove{},
-// 		},
-// 		{
-// 			board: "UP ryryryry///////",
-// 			color: g4.Yellow,
-// 			move:  g4.TokenMove(g4.Yellow, 0),
-// 			err:   g4.ErrorInvalidMove{},
-// 		},
-// 	}
-// 	for k, ex := range examples {
-// 		board, err := simulation.FromString(ex.board)
-// 		if err != nil {
-// 			t.Errorf("example %d: error in FromString: %v", k, err)
-// 		}
-// 		game, err := simulation.FromBoard(board, ex.color)
-// 		if err != nil {
-// 			t.Errorf("example %d: error in FromBoard: %v", k, err)
-// 		}
-// 		_, _, err = game.Apply(ex.move)
-// 		if err != ex.err {
-// 			t.Errorf("example %d: incorrect error: got %v but want %v", k, err, ex.err)
-// 		}
-// 	}
-// }
+func TestApplyInvalidMoves(t *testing.T) {
+	examples := []struct {
+		in        string
+		color     g4.Color
+		direction g4.Direction
+		move      g4.Move
+		err       error
+	}{
+		{
+			in:        "8|8|8|8|8|8|8|8",
+			color:     g4.Yellow,
+			direction: g4.UP,
+			move:      g4.TiltMove(g4.UP),
+			err:       g4.ErrorInvalidMove{},
+		},
+		{
+			in:        "ryryryry|8|8|8|8|8|8|8",
+			color:     g4.Yellow,
+			direction: g4.UP,
+			move:      g4.TokenMove(g4.Yellow, 0),
+			err:       g4.ErrorInvalidMove{},
+		},
+		{
+			in:        "8|8|8|8|8|8|8|8",
+			color:     g4.Yellow,
+			direction: g4.UP,
+			move:      g4.TokenMove(g4.Yellow, 8), // NB: invalid column.
+			err:       g4.ErrorInvalidMove{},
+		},
+		// TODO: add a move with invalid type.
+	}
+	for k, ex := range examples {
+		board, err := bits.FromString(ex.in)
+		if err != nil {
+			t.Errorf("example %d: error in FromString: %v", k, err)
+		}
+		game, err := simulation.FromBoard(board, ex.color, ex.direction)
+		if err != nil {
+			t.Errorf("example %d: error in FromBoard (in): %v", k, err)
+		}
+		_, err = game.Apply(ex.move)
+		if err != ex.err {
+			t.Errorf("example %d: incorrect error: got %v but want %v", k, err, ex.err)
+		}
+	}
+}
 
 // TODO(Pierre-Louis): test perft.

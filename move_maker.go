@@ -30,15 +30,16 @@ const (
 	Tilt
 )
 
+// TODO: proper naming for attributes.
 type Move struct {
-	// MoveType indicates whether the move is a tilt or a token.
-	moveType MoveType
-	// Gravity indicates the new direction for a tilt move.
-	gravity Direction
-	// Column indicates the column that was played for a token move.
-	column int
-	// Color indicates the color that was played for a token move.
-	color Color
+	// Type indicates whether the move is a tilt or a token.
+	Type MoveType
+	// Direction indicates the new direction for a tilt move.
+	Direction Direction
+	// ColumnIdx indicates the column that was played for a token move.
+	ColumnIdx int
+	// Col indicates the color that was played for a token move.
+	Col Color
 }
 
 func Base() Move {
@@ -46,27 +47,27 @@ func Base() Move {
 }
 
 func (m Move) Token() Move {
-	m.moveType = Token
+	m.Type = Token
 	return m
 }
 
 func (m Move) Tilt() Move {
-	m.moveType = Tilt
+	m.Type = Tilt
 	return m
 }
 
 func (m Move) Column(column int) Move {
-	m.column = column
+	m.ColumnIdx = column
 	return m
 }
 
 func (m Move) Color(color Color) Move {
-	m.color = color
+	m.Col = color
 	return m
 }
 
 func (m Move) Gravity(gravity Direction) Move {
-	m.gravity = gravity
+	m.Direction = gravity
 	return m
 }
 

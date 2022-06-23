@@ -28,10 +28,10 @@ func TestMoveMaker(t *testing.T) {
 		Base().Token().Color(Red).Column(0),
 	}
 	want := []Move{
-		{moveType: Tilt, gravity: UP},
-		{moveType: Tilt, gravity: DOWN},
-		{moveType: Token, color: Yellow, column: 3},
-		{moveType: Token, color: Red, column: 0},
+		{Type: Tilt, Direction: UP},
+		{Type: Tilt, Direction: DOWN},
+		{Type: Token, Col: Yellow, ColumnIdx: 3},
+		{Type: Token, Col: Red, ColumnIdx: 0},
 	}
 	for k := range got {
 		if got[k] != want[k] {
@@ -48,10 +48,10 @@ func TestShorthands(t *testing.T) {
 		TokenMove(Red, 0),
 	}
 	want := []Move{
-		{moveType: Tilt, gravity: UP},
-		{moveType: Tilt, gravity: DOWN},
-		{moveType: Token, color: Yellow, column: 3},
-		{moveType: Token, color: Red, column: 0},
+		{Type: Tilt, Direction: UP},
+		{Type: Tilt, Direction: DOWN},
+		{Type: Token, Col: Yellow, ColumnIdx: 3},
+		{Type: Token, Col: Red, ColumnIdx: 0},
 	}
 	for k := range got {
 		if got[k] != want[k] {

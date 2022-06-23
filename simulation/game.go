@@ -60,7 +60,7 @@ func (g Game) Generate() ([]g4.Move, error) {
 
 	// Check whether board is full.
 	heights := g.board.Heights()
-	if heights[0] == 8 && heights[1] == 8 && heights[2] == 8 && heights[3] == 8 && heights[4] == 8 && heights[5] == 8 && heights[6] == 8 && heights[7] == 8 {
+	if heights[0]+heights[1]+heights[2]+heights[3]+heights[4]+heights[5]+heights[6]+heights[7] == 64 {
 		return moves, g4.ErrorGameOver(g4.Empty) // Draw.
 	}
 
@@ -88,6 +88,63 @@ func (g Game) Generate() ([]g4.Move, error) {
 	return moves, nil
 }
 
+// Apply performs a move from a game state.
+//
+// TODO: direction arithmetics for cleaner code.
+// TODO: save successive states taken through moves (in particular for tilt moves)
+//	for display.
 func (g Game) Apply(move g4.Move) (g4.Game, error) {
-	return nil, nil
+	switch t := move.Type; t {
+	case g4.Tilt:
+		var times int
+		switch [2]g4.Direction{g.direction, move.Direction} {
+		case [2]g4.Direction{g4.UP, g4.LEFT}:
+			times = 3
+		case [2]g4.Direction{g4.UP, g4.DOWN}:
+			times = 2
+		case [2]g4.Direction{g4.UP, g4.RIGHT}:
+			times = 1
+		case [2]g4.Direction{g4.LEFT, g4.UP}:
+			times = 1
+		case [2]g4.Direction{g4.LEFT, g4.DOWN}:
+			times = 2
+		case [2]g4.Direction{g4.LEFT, g4.RIGHT}:
+			times = 3
+		case [2]g4.Direction{g4.DOWN, g4.LEFT}:
+			times = 1
+		case [2]g4.Direction{g4.DOWN, g4.RIGHT}:
+			times = 3
+		case [2]g4.Direction{g4.DOWN, g4.UP}:
+			times = 2
+		case [2]g4.Direction{g4.RIGHT, g4.LEFT}:
+			times = 2
+		case [2]g4.Direction{g4.RIGHT, g4.DOWN}:
+			times = 1
+		case [2]g4.Direction{g4.RIGHT, g4.UP}:
+			times = 3
+		default:
+			return g, g4.ErrorInvalidMove{}
+		}
+		g.direction = move.Direction
+		g.board = g.board.RotateLeft(times).ApplyGravity()
+	case g4.Token:
+		if move.ColumnIdx < 0 || move.ColumnIdx >= 8 {
+			return g, g4.ErrorInvalidMove{}
+		}
+		if g.board.Heights()[move.ColumnIdx] == 8 {
+			return g, g4.ErrorInvalidMove{}
+		}
+		g.board = g.board.AddToken(move.ColumnIdx, g.color)
+	default:
+		return g, g4.ErrorInvalidMove{}
+	}
+
+	// Switch colors.
+	if g.color == g4.Red {
+		g.color = g4.Yellow
+	} else {
+		g.color = g4.Red
+	}
+
+	return g, nil
 }
