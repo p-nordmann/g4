@@ -25,6 +25,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+// TODO: CLI outside of bubbletea.
+
 func main() {
 	p := tea.NewProgram(Home, tea.WithAltScreen())
 	if err := p.Start(); err != nil {

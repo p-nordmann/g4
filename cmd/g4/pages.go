@@ -29,6 +29,8 @@ const (
 	Exit
 )
 
+// TODO: actual application model.
+
 func (p Page) Next() Page {
 	switch p {
 	case Home:

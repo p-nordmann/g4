@@ -56,3 +56,8 @@ type Board interface {
 	// Heights returns a list of heights for all the columns.
 	Heights() [8]int
 }
+
+// TODO: split board into multiple interfaces?
+// TODO: add a method String to boards.
+// TODO: add a method image or string or array to game.
+// TODO: build game history with boards and moves.

@@ -24,3 +24,7 @@ package g4
 // For displaying the board:
 // https://github.com/knipferrc/teacup -> image module
 // https://github.com/76creates/stickers -> flex boxes
+
+// TODO: display package to go from board description to image to string or something that can be digested for display.
+
+// TODO: network package.
