@@ -16,11 +16,19 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package g4
+package main
 
-// import tea "github.com/charmbracelet/bubbletea"
-// import "github.com/charmbracelet/lipgloss"
+import (
+	"fmt"
+	"os"
 
-// For displaying the board:
-// https://github.com/knipferrc/teacup -> image module
-// https://github.com/76creates/stickers -> flex boxes
+	tea "github.com/charmbracelet/bubbletea"
+)
+
+func main() {
+	p := tea.NewProgram(Home, tea.WithAltScreen())
+	if err := p.Start(); err != nil {
+		fmt.Printf("Alas, there's been an error: %v", err)
+		os.Exit(1)
+	}
+}
