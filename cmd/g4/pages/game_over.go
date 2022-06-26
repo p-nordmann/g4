@@ -16,13 +16,26 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package main
+package pages
 
-import "g4/cmd/g4/cmd"
+import (
+	"g4"
 
-// TODO: cobra testing.
-// TODO: bubbletea testing.
+	tea "github.com/charmbracelet/bubbletea"
+)
 
-func main() {
-	cmd.Execute()
+type GameOverModel struct {
+	err g4.ErrorGameOver
+}
+
+func (m GameOverModel) Init() tea.Cmd {
+	return nil
+}
+
+func (m GameOverModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	return m, nil
+}
+
+func (m GameOverModel) View() string {
+	return m.err.Error()
 }

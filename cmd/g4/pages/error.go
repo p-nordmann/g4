@@ -16,13 +16,26 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package main
+package pages
 
-import "g4/cmd/g4/cmd"
+import (
+	"fmt"
 
-// TODO: cobra testing.
-// TODO: bubbletea testing.
+	tea "github.com/charmbracelet/bubbletea"
+)
 
-func main() {
-	cmd.Execute()
+type ErrorModel struct {
+	err error
+}
+
+func (m ErrorModel) Init() tea.Cmd {
+	return nil
+}
+
+func (m ErrorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	return m, nil
+}
+
+func (m ErrorModel) View() string {
+	return fmt.Sprintf("An error occurred: %s", m.err.Error())
 }

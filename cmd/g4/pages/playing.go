@@ -16,13 +16,21 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package main
+package pages
 
-import "g4/cmd/g4/cmd"
+import tea "github.com/charmbracelet/bubbletea"
 
-// TODO: cobra testing.
-// TODO: bubbletea testing.
+type PlayingModel struct {
+}
 
-func main() {
-	cmd.Execute()
+func (m PlayingModel) Init() tea.Cmd {
+	return nil
+}
+
+func (m PlayingModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	return m, nil
+}
+
+func (m PlayingModel) View() string {
+	return "You are now playing!"
 }

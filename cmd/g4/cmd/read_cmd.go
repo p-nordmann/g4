@@ -16,13 +16,20 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package main
+package cmd
 
-import "g4/cmd/g4/cmd"
+import "github.com/spf13/cobra"
 
-// TODO: cobra testing.
-// TODO: bubbletea testing.
-
-func main() {
-	cmd.Execute()
+// readCmd provides the read command allowing to analyze a game of G4.
+//
+// TODO
+var readCmd = &cobra.Command{
+	Use:   "read",
+	Short: "Provides an analysis tool for G4 games.",
+	Long:  ``,
+	Args:  cobra.NoArgs,
+	PreRun: func(cmd *cobra.Command, args []string) {
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+	},
 }

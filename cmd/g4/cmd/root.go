@@ -16,13 +16,36 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package main
+package cmd
 
-import "g4/cmd/g4/cmd"
+import (
+	"os"
 
-// TODO: cobra testing.
-// TODO: bubbletea testing.
+	"github.com/spf13/cobra"
+)
 
-func main() {
-	cmd.Execute()
+// rootCmd represents the base g4 command.
+var rootCmd = &cobra.Command{
+	Use:   "g4",
+	Short: "G4 command-line interface.",
+	Long:  `G4 is a game based on connect-4, with added rotation moves.`,
+	// PreRun: func(cmd *cobra.Command, args []string) {
+	// },
+	Args: cobra.NoArgs,
+}
+
+func init() {
+	// rootCmd.PersistentFlags().StringVarP(&ManifestoFile, "manifesto", "m", "", "manifesto file path")
+	// rootCmd.MarkPersistentFlagRequired("manifesto")
+
+	rootCmd.AddCommand(playCmd)
+	rootCmd.AddCommand(showCmd)
+	rootCmd.AddCommand(readCmd)
+}
+
+func Execute() {
+	err := rootCmd.Execute()
+	if err != nil {
+		os.Exit(1)
+	}
 }

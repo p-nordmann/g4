@@ -16,13 +16,24 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package main
+package cmd
 
-import "g4/cmd/g4/cmd"
+import (
+	"fmt"
 
-// TODO: cobra testing.
-// TODO: bubbletea testing.
+	"github.com/spf13/cobra"
+)
 
-func main() {
-	cmd.Execute()
+// playCmd provides the play command: let's play a game of G4!
+//
+// TODO
+var playCmd = &cobra.Command{
+	Use:   "play address",
+	Short: "Let's play a game of G4!",
+	Long:  ``,
+	Args:  cobra.ExactValidArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		fmt.Println(args[0])
+		return nil
+	},
 }
