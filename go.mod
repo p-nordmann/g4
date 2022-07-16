@@ -6,6 +6,7 @@ go 1.17
 
 require (
 	github.com/charmbracelet/bubbletea v0.21.0
+	github.com/gorilla/websocket v1.5.0
 	github.com/spf13/cobra v1.5.0
 )
 

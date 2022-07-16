@@ -28,7 +28,7 @@ package g4
 type Game interface {
 	// Apply performs a move from a game state.
 	// The new game state is returned.
-	Apply(Move) (Game, error)
+	Apply(m Move) (Game, error)
 
 	// Generate returns the list of possible moves.
 	// If the game is over, an error is supposed to be returned.
