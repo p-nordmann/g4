@@ -20,25 +20,33 @@ package ws
 
 import (
 	"context"
+	"errors"
+	"net/http"
 )
 
-// Conn is intended to represent the functions needed from a websocket connection.
-//
-// It is designed so gorilla/websocket's *Conn implements this interface.
-type Conn interface {
-	Close() error
-	ReadJSON(v interface{}) error
-	WriteJSON(v interface{}) error
+type MockServer struct {
+	server                             *http.Server
+	mustCrash                          bool
+	cancel                             chan context.Context
+	countListenAndServe, countShutdown int
 }
 
-// Connector is intended to represent the functions needed to dial or serve through websockets.
-type Connector interface {
-	DialContext(ctx context.Context, urlStr string) (Conn, error)
-	ServeContext(ctx context.Context, urlStr string) (Conn, error)
+func (mockServer *MockServer) ListenAndServe() error {
+	mockServer.countListenAndServe++
+	go func() {
+		mockServer.server.ListenAndServe()
+	}()
+	if mockServer.mustCrash {
+		mockServer.server.Close()
+		return errors.New("server crashed")
+	}
+	ctx := <-mockServer.cancel
+	mockServer.server.Shutdown(ctx)
+	return errors.New("server was canceled")
 }
 
-// Server is intented to fit http.Server.
-type Server interface {
-	ListenAndServe() error
-	Shutdown(ctx context.Context) error
+func (mockServer *MockServer) Shutdown(ctx context.Context) error {
+	mockServer.countShutdown++
+	mockServer.cancel <- ctx
+	return nil
 }

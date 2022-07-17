@@ -20,38 +20,18 @@ package ws
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/gorilla/websocket"
 )
 
-// TODO: address and port
-const Address = "localhost:8080"
-
-// GorillaDialer encapsulates a dialer from gorilla/websocket to comply with the Dialer interface.
-type GorillaDialer struct {
-	dialer *websocket.Dialer
-}
-
-// WARNING: untested.
-func (gorillaDialer GorillaDialer) DialContext(ctx context.Context, urlStr string) (Conn, error) {
-	// Necessary for casting *websocket.Conn to Conn interface.
-	conn, _, err := gorillaDialer.dialer.DialContext(ctx, urlStr, nil)
-	return conn, err
-}
-
-// WARNING: untested.
-// TODO: find a way to test this or it will be painful...
-func (gorillaDialer GorillaDialer) ServeContext(ctx context.Context, urlStr string) (Conn, error) {
-	server := http.Server{Addr: Address}
+// wsHandler returns the handler corresponding to urlStr and sending to chanWS.
+func wsHandler(urlStr string, chanWS chan *websocket.Conn) func(w http.ResponseWriter, r *http.Request) {
 	upgrader := websocket.Upgrader{}
-	chanWS := make(chan *websocket.Conn)
-	chanErr := make(chan error)
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: checking should call a specialized function. String comparison is not quite enough.
-		if r.RemoteAddr != urlStr {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !areUrlEqual(r.RemoteAddr, urlStr) {
 			return
 		}
 		conn, err := upgrader.Upgrade(w, r, nil)
@@ -59,24 +39,74 @@ func (gorillaDialer GorillaDialer) ServeContext(ctx context.Context, urlStr stri
 			return
 		}
 		chanWS <- conn
-	})
+	}
+}
 
-	// Listen and serve in goroutine to be able to select from context.
+var handler func(w http.ResponseWriter, r *http.Request)
+
+func handlerWrapper(w http.ResponseWriter, r *http.Request) {
+	if handler == nil {
+		return
+	}
+	handler(w, r)
+}
+
+// GorillaDialer encapsulates a dialer from gorilla/websocket to comply with the Dialer interface.
+type GorillaDialer struct {
+	dialer *websocket.Dialer
+	server Server
+}
+
+// WARNING: untested.
+func (gorillaDialer GorillaDialer) DialContext(ctx context.Context, urlStr string) (Conn, error) {
+
+	// Avoid nil dialer.
+	if gorillaDialer.dialer == nil {
+		return nil, errors.New("<nil> dialer")
+	}
+
+	conn, _, err := gorillaDialer.dialer.DialContext(ctx, urlStr, nil)
+	return conn, err
+}
+
+func (gorillaDialer GorillaDialer) ServeContext(ctx context.Context, urlStr string) (Conn, error) {
+
+	// Avoid nil server.
+	if gorillaDialer.server == nil {
+		return nil, errors.New("<nil> server")
+	}
+
+	// Channels for feedback.
+	chanWS := make(chan *websocket.Conn)
+	chanErr := make(chan error)
+
+	// Set handler up.
+	// TODO: cleaner handler. With the net.http package we can only have one handler for /.
+	//   This is why we use the following workaround. A cleaner way should be designed instead.
+	if handler == nil {
+		http.HandleFunc("/", handlerWrapper)
+	}
+	handler = wsHandler(urlStr, chanWS)
+
+	// Run server.
 	go func() {
-		chanErr <- server.ListenAndServe()
+		chanErr <- gorillaDialer.server.ListenAndServe()
 	}()
 
-	// Wait for something to happen.
+	// Handle feedback.
 	select {
 	case err := <-chanErr:
 		return nil, fmt.Errorf("server error: %w", err)
 	case <-ctx.Done():
-		server.Shutdown(context.Background())
-		<-chanErr // Empty error chan.
+		gorillaDialer.server.Shutdown(context.Background())
+		<-chanErr
 		return nil, fmt.Errorf("context done: %w", ctx.Err())
 	case conn := <-chanWS:
-		server.Shutdown(context.Background())
-		<-chanErr // Empty error chan.
+		go func() {
+			// This will take until the websocket closes to shutdown.
+			gorillaDialer.server.Shutdown(context.Background())
+			<-chanErr
+		}()
 		return conn, nil
 	}
 }

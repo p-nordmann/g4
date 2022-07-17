@@ -23,10 +23,14 @@ import (
 	"context"
 	"fmt"
 	"g4"
+	"net/http"
 	"time"
 
 	"github.com/gorilla/websocket"
 )
+
+// TODO: address and port must be defined somewhere else.
+const Address = ":8080"
 
 // TODO: documentation.
 
@@ -48,9 +52,12 @@ type Channel struct {
 
 func New(config ChannelConfig) *Channel {
 	return &Channel{
-		config:    config,
-		connector: GorillaDialer{websocket.DefaultDialer},
-		conn:      nil,
+		config: config,
+		connector: GorillaDialer{
+			websocket.DefaultDialer,
+			&http.Server{Addr: Address},
+		},
+		conn: nil,
 	}
 }
 
