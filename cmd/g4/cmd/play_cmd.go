@@ -37,3 +37,25 @@ var playCmd = &cobra.Command{
 		return nil
 	},
 }
+
+// TODO: rough draft/outline of main game loop
+func playLoop() {
+
+	// Communication channel between backend and frontend.
+	comm := make(chan interface{})
+
+	// Something like starting the frontend.
+	go func() {
+		front := startFrontend()
+		for msg := range comm {
+			front.SendMessage(msg)
+		}
+	}()
+
+	// Something like this to start the backend.
+	go func() {
+		back := startBackend()
+
+		// TODO outline
+	}()
+}
