@@ -69,6 +69,7 @@ func NewWithConnector(config ChannelConfig, connector Connector) *Channel {
 	}
 }
 
+// TODO: address management: should not be necessary to input ws:// and port this way.
 func (ch *Channel) ConnectWait(ctx context.Context, urlStr string) error {
 	// Try to dial urlStr first.
 	ctxDial, cancel := context.WithTimeout(ctx, ch.config.DialTimeout)

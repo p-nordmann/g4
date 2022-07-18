@@ -45,7 +45,7 @@ type Channel interface {
 	SendMoveAndPosition(mp MoveAndPosition) error
 
 	// ReadMoveAndPosition waits for the oponent to send a move and receives it.
-	ReadMoveAndPosition(mp MoveAndPosition) (MoveAndPosition, error)
+	ReadMoveAndPosition() (MoveAndPosition, error)
 
 	// ConnectWait tries to connect to the provided URL.
 	//
