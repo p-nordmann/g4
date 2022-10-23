@@ -16,23 +16,26 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package frontend
+package pages
 
-type Frontend struct {
+import (
+	"g4"
+
+	tea "github.com/charmbracelet/bubbletea"
+)
+
+type GameOverModel struct {
+	err g4.ErrorGameOver
 }
 
-func ShowWait() {
-
+func (m GameOverModel) Init() tea.Cmd {
+	return nil
 }
 
-func ShowPlay() {
-
+func (m GameOverModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	return m, nil
 }
 
-func ShowGameOver() {
-
-}
-
-func ShowError() {
-
+func (m GameOverModel) View() string {
+	return m.err.Error()
 }

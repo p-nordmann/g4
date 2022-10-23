@@ -20,7 +20,9 @@ package cmd
 
 import (
 	"fmt"
+	waiting "g4/frontend/pages/waiting"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
 
@@ -33,29 +35,35 @@ var playCmd = &cobra.Command{
 	Long:  ``,
 	Args:  cobra.ExactValidArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Println(args[0])
+		var url string = args[0]
+
+		p := tea.NewProgram(waiting.InitialWaitingModel(url), tea.WithAltScreen())
+		if err := p.Start(); err != nil {
+			fmt.Println(err)
+			return err
+		}
 		return nil
 	},
 }
 
 // TODO: rough draft/outline of main game loop
-func playLoop() {
+// func playLoop() {
 
-	// Communication channel between backend and frontend.
-	comm := make(chan interface{})
+// 	// Communication channel between backend and frontend.
+// 	comm := make(chan interface{})
 
-	// Something like starting the frontend.
-	go func() {
-		front := startFrontend()
-		for msg := range comm {
-			front.SendMessage(msg)
-		}
-	}()
+// 	// Something like starting the frontend.
+// 	go func() {
+// 		front := startFrontend()
+// 		for msg := range comm {
+// 			front.SendMessage(msg)
+// 		}
+// 	}()
 
-	// Something like this to start the backend.
-	go func() {
-		back := startBackend()
+// 	// Something like this to start the backend.
+// 	go func() {
+// 		back := startBackend()
 
-		// TODO outline
-	}()
-}
+// 		// TODO outline
+// 	}()
+// }

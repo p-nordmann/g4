@@ -5,12 +5,14 @@ replace g4 => ../g4
 go 1.17
 
 require (
+	github.com/charmbracelet/bubbles v0.13.0
 	github.com/charmbracelet/bubbletea v0.21.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/spf13/cobra v1.5.0
 )
 
 require (
+	github.com/charmbracelet/lipgloss v0.5.0 // indirect
 	github.com/containerd/console v1.0.3 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect

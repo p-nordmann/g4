@@ -16,23 +16,4 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package frontend
-
-type Frontend struct {
-}
-
-func ShowWait() {
-
-}
-
-func ShowPlay() {
-
-}
-
-func ShowGameOver() {
-
-}
-
-func ShowError() {
-
-}
+package frontend_test

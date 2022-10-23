@@ -16,23 +16,22 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package frontend
+package pages
 
-type Frontend struct {
+import tea "github.com/charmbracelet/bubbletea"
+
+// Page is a generic type to implement the Model interface while staying versatile.
+type PageModel struct {
 }
 
-func ShowWait() {
-
+func (m PageModel) Init() tea.Cmd {
+	return nil
 }
 
-func ShowPlay() {
-
+func (m PageModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	return m, nil
 }
 
-func ShowGameOver() {
-
-}
-
-func ShowError() {
-
+func (m PageModel) View() string {
+	return "You are now playing!"
 }
