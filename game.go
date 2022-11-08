@@ -33,6 +33,8 @@ type Game interface {
 	// Generate returns the list of possible moves.
 	// If the game is over, an error is supposed to be returned.
 	Generate() ([]Move, error)
+
+	ToArray() [8][8]Color
 }
 
 type Board interface {
@@ -55,6 +57,8 @@ type Board interface {
 
 	// Heights returns a list of heights for all the columns.
 	Heights() [8]int
+
+	ToArray() [8][8]Color
 }
 
 // TODO: split board into multiple interfaces?

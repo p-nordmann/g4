@@ -62,14 +62,16 @@ func TestChannel(t *testing.T) {
 	ch1 := ws.New(ws.ChannelConfig{
 		DialTimeout:  10 * time.Millisecond,
 		ServeTimeout: 5 * time.Second,
+		Address:      "localhost:8080",
 	})
 	ch2 := ws.New(ws.ChannelConfig{
 		DialTimeout:  10 * time.Millisecond,
 		ServeTimeout: 5 * time.Second,
+		Address:      "localhost:8081",
 	})
 
 	// ConnectWait both channels.
-	errCh1 := asyncConnectWait(context.Background(), "ws://localhost:8080", ch1) // TODO: address management
+	errCh1 := asyncConnectWait(context.Background(), "ws://localhost:8081", ch1) // TODO: address management
 	time.Sleep(20 * time.Millisecond)
 	errCh2 := asyncConnectWait(context.Background(), "ws://localhost:8080", ch2)
 

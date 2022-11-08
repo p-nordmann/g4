@@ -21,8 +21,8 @@ package g4
 // MoveType indicates the kind of a move.
 //
 // A move can be one of:
-//	- Tilt: changing the direction of the gravity.
-//	- Token: placing a new token on top of one column.
+//   - Tilt: changing the direction of the gravity.
+//   - Token: placing a new token on top of one column.
 type MoveType byte
 
 const (
@@ -40,6 +40,26 @@ type Move struct {
 	ColumnIdx int
 	// Col indicates the color that was played for a token move.
 	Col Color
+}
+
+func (m Move) String() string {
+	if m.Type == Token {
+		return string('0' + m.ColumnIdx)
+	}
+	if m.Type == Tilt {
+		switch m.Direction {
+		case UP:
+			return "UP"
+		case LEFT:
+			return "LEFT"
+		case RIGHT:
+			return "RIGHT"
+		case DOWN:
+			return "DOWN"
+
+		}
+	}
+	return "Unknown"
 }
 
 func Base() Move {

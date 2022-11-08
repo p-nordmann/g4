@@ -30,18 +30,20 @@ import (
 )
 
 // TODO: address and port must be defined somewhere else.
-const Address = ":8080"
+const DefaultAddress = ":8080"
 
 // TODO: documentation.
 
 type ChannelConfig struct {
 	DialTimeout  time.Duration
 	ServeTimeout time.Duration
+	Address      string
 }
 
 var DefautConfig = ChannelConfig{
 	DialTimeout:  5 * time.Second,
 	ServeTimeout: time.Minute,
+	Address:      DefaultAddress,
 }
 
 type Channel struct {
@@ -55,7 +57,7 @@ func New(config ChannelConfig) *Channel {
 		config: config,
 		connector: GorillaDialer{
 			websocket.DefaultDialer,
-			&http.Server{Addr: Address},
+			&http.Server{Addr: config.Address},
 		},
 		conn: nil,
 	}

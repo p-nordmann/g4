@@ -42,7 +42,7 @@ type MoveAndPosition struct {
 type Channel interface {
 
 	// SendMoveAndPosition sends the selected move to the opponent.
-	SendMoveAndPosition(mp MoveAndPosition) error
+	SendMoveAndPosition(mp MoveAndPosition) error // TODO: too complex to send and receive position, just do the bare minimum...
 
 	// ReadMoveAndPosition waits for the oponent to send a move and receives it.
 	ReadMoveAndPosition() (MoveAndPosition, error)

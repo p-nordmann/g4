@@ -23,6 +23,10 @@ import (
 	"g4"
 )
 
+func (g Game) ToArray() [8][8]g4.Color {
+	return g.board.ToArray()
+}
+
 type Game struct {
 	board     g4.Board
 	color     g4.Color
@@ -92,6 +96,7 @@ func (g Game) Generate() ([]g4.Move, error) {
 //
 // TODO: direction arithmetics for cleaner code.
 // TODO: save successive states taken through moves (in particular for tilt moves)
+//
 //	for display.
 func (g Game) Apply(move g4.Move) (g4.Game, error) {
 	switch t := move.Type; t {
