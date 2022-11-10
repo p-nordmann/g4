@@ -1,21 +1,3 @@
-/*
-G4 is an open-source board game inspired by the popular game of connect-4.
-Copyright (C) 2022  Pierre-Louis Nordmann
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 package bits
 
 import (
@@ -36,9 +18,9 @@ func (b Board) RotateLeft(times int) g4.Board {
 // ApplyGravity makes the token drop according to gravity.
 //
 // Uses the naive approach:
-// 	- computes bits with a gap immediately below them
-// 	- drop one square
-// 	- iterate (8 times)
+//   - computes bits with a gap immediately below them
+//   - drop one square
+//   - iterate (8 times)
 func (b Board) ApplyGravity() g4.Board {
 	for k := 0; k < 8; k++ {
 		gaps := ^(b.yellowBits | b.redBits)
