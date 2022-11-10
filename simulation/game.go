@@ -23,8 +23,8 @@ import (
 	"g4"
 )
 
-func (g Game) ToArray() [8][8]g4.Color {
-	return g.board.ToArray()
+func (g Game) ToArray() ([8][8]g4.Color, g4.Direction) {
+	return g.board.ToArray(), g.direction
 }
 
 type Game struct {

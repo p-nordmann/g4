@@ -34,7 +34,7 @@ type Game interface {
 	// If the game is over, an error is supposed to be returned.
 	Generate() ([]Move, error)
 
-	ToArray() [8][8]Color
+	ToArray() ([8][8]Color, Direction)
 }
 
 type Board interface {
