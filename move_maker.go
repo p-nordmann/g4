@@ -18,6 +18,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 package g4
 
+import "fmt"
+
 // MoveType indicates the kind of a move.
 //
 // A move can be one of:
@@ -44,7 +46,7 @@ type Move struct {
 
 func (m Move) String() string {
 	if m.Type == Token {
-		return string('0' + m.ColumnIdx)
+		return fmt.Sprint(m.ColumnIdx)
 	}
 	if m.Type == Tilt {
 		switch m.Direction {
