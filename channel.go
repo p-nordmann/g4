@@ -20,4 +20,7 @@ type Channel interface {
 
 	// Close is necessary for closing the inner connections.
 	Close() error
+
+	// ChooseColor communicates with the peer to assign each player a color.
+	ChooseColor() (Color, error)
 }

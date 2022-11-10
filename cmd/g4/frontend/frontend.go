@@ -42,36 +42,21 @@ type mainModel struct {
 func New(url string, port int) mainModel {
 	board, _ := bits.FromString("8|8|8|8|8|8|8|8")
 	game, _ := simulation.FromBoard(board, g4.Yellow, g4.UP)
+	moves, _ := game.Generate()
 	return mainModel{
 		url:  url,
 		port: port,
 		selector: selectorArea{
-			SelectedMove: 3,
-			Disabled:     false,
-			PossibleMoves: []g4.Move{
-				g4.TokenMove(g4.Red, 1),
-				g4.TokenMove(g4.Red, 2),
-				g4.TokenMove(g4.Red, 3),
-				g4.TokenMove(g4.Red, 4),
-				g4.TokenMove(g4.Red, 5),
-				g4.TokenMove(g4.Red, 6),
-				g4.TokenMove(g4.Red, 7),
-				g4.TokenMove(g4.Red, 8),
-				g4.TiltMove(g4.LEFT),
-				g4.TiltMove(g4.DOWN),
-				g4.TiltMove(g4.UP),
-			},
+			SelectedMove:  -1,
+			Disabled:      true,
+			PossibleMoves: moves,
 		},
-		listing: listingArea{
-			History: []g4.Move{
-				g4.TokenMove(g4.Yellow, 4),
-				g4.TokenMove(g4.Red, 5),
-				g4.TokenMove(g4.Yellow, 4),
-				g4.TokenMove(g4.Red, 4),
-				g4.TiltMove(g4.RIGHT),
-			},
+		listing: listingArea{},
+		board: playArea{
+			Direction: g4.UP,
 		},
-		game: game,
+		game:          game,
+		colorWithMove: g4.Yellow,
 	}
 }
 
@@ -114,9 +99,18 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.ch = msg
 		return m, chooseColor(m.ch)
 
+	// When color is chosen (at the start).
+	case g4.Color:
+		m.playerColor = msg
+		if msg == m.colorWithMove {
+			m.selector.Disabled = false
+		} else {
+			return m, receiveMove(m.ch)
+		}
+
 	// When a move is played.
-	case receivedMove:
-		move := g4.Move(msg)
+	case g4.Move:
+		move := msg
 		game, err := m.game.Apply(move)
 		if err != nil {
 			m.ch.Close()
@@ -140,6 +134,14 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			fmt.Println(err)
 			return m, tea.Quit
 		}
+
+	default:
+		// Handle move selection.
+		// TODO: should not delegate channel to selector.
+		// selector should be service-agnostic.
+		selector, cmd := m.selector.Update(m.ch, msg)
+		m.selector = selector
+		return m, cmd
 	}
 	return m, nil
 }
@@ -150,7 +152,13 @@ func (m mainModel) View() string {
 		lipgloss.Top,
 		sidePannelStyle.Render(m.listing.View()),
 		playAreaStyle.Render(m.board.View()),
-		sidePannelStyle.Render(m.selector.View()),
+		lipgloss.JoinVertical(
+			lipgloss.Center,
+			m.board.Direction.String(),
+			sidePannelStyle.Render(
+				m.selector.View(),
+			),
+		),
 	)
 	return s
 }

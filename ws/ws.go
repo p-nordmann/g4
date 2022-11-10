@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"g4"
+	"math/rand"
 	"net/http"
 	"time"
 
@@ -107,4 +108,35 @@ func (ch *Channel) Close() error {
 		return fmt.Errorf("error closing the connection: %w", err)
 	}
 	return nil
+}
+
+// ChooseColor tries to find a common color with the peer.
+//
+// It will repeatedly choose red or yellow at random,
+// send it to the peer and wait for an answer from the peer.
+// When both colors are different it will keep it.
+func (ch *Channel) ChooseColor() (g4.Color, error) {
+
+	colors := [2]g4.Color{
+		g4.Red,
+		g4.Yellow,
+	}
+
+	for {
+		color := colors[rand.Intn(2)]
+		err := ch.conn.WriteJSON(color)
+		if err != nil {
+			return 0, fmt.Errorf("error writing to connection: %w", err)
+		}
+
+		var peerColor g4.Color
+		err = ch.conn.ReadJSON(&peerColor)
+		if err != nil {
+			return 0, fmt.Errorf("error reading from connection: %w", err)
+		}
+
+		if color != peerColor {
+			return color, nil
+		}
+	}
 }

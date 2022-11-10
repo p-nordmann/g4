@@ -30,7 +30,8 @@ func connect(url string, port int) tea.Cmd {
 
 func chooseColor(ch g4.Channel) tea.Cmd {
 	return func() tea.Msg {
-		return receivedMove(g4.TokenMove(g4.Yellow, 1))
+		color, _ := ch.ChooseColor()
+		return color
 	}
 }
 
@@ -41,16 +42,16 @@ func watchChannel(channel g4.Channel) tea.Cmd {
 	}
 }
 
-func sendMove(move g4.Move) tea.Cmd {
+func sendMove(ch g4.Channel, move g4.Move) tea.Cmd {
 	return func() tea.Msg {
-		// TODO: use channel to send move
-		return nil
+		ch.SendMove(move)
+		return move
 	}
 }
-func receiveMove() tea.Cmd {
+func receiveMove(ch g4.Channel) tea.Cmd {
 	return func() tea.Msg {
-		// TODO: use channel to read move
-		return nil
+		move, _ := ch.ReadMove()
+		return move
 	}
 }
 

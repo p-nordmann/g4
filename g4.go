@@ -21,3 +21,18 @@ const (
 	DOWN
 	RIGHT
 )
+
+func (d Direction) String() string {
+	switch d {
+	case UP:
+		return "UP"
+	case LEFT:
+		return "<="
+	case DOWN:
+		return "DOWN"
+	case RIGHT:
+		return "=>"
+	default:
+		return "UNKNOWN"
+	}
+}
