@@ -34,27 +34,27 @@ func asyncConnectWait(ctx context.Context, URL string, ch g4.Channel) chan error
 	return errCh
 }
 
-// SendMoveAndPosition sends the selected move to the opponent.
-func asyncSendMoveAndPosition(mp g4.MoveAndPosition, ch g4.Channel) chan error {
+// SendMove sends the selected move to the opponent.
+func asyncSendMove(move g4.Move, ch g4.Channel) chan error {
 	errCh := make(chan error)
 	go func() {
-		errCh <- ch.SendMoveAndPosition(mp)
+		errCh <- ch.SendMove(move)
 	}()
 	return errCh
 }
 
-// ReadMoveAndPosition waits for the oponent to send a move and receives it.
-func asyncReadMoveAndPosition(ch g4.Channel) (chan g4.MoveAndPosition, chan error) {
-	mpCh := make(chan g4.MoveAndPosition)
+// ReadMove waits for the oponent to send a move and receives it.
+func asyncReadMove(ch g4.Channel) (chan g4.Move, chan error) {
+	moveCh := make(chan g4.Move)
 	errCh := make(chan error)
 	go func() {
-		mp, err := ch.ReadMoveAndPosition()
+		move, err := ch.ReadMove()
 		if err != nil {
 			errCh <- err
 		}
-		mpCh <- mp
+		moveCh <- move
 	}()
-	return mpCh, errCh
+	return moveCh, errCh
 }
 
 func TestChannel(t *testing.T) {
@@ -83,79 +83,58 @@ func TestChannel(t *testing.T) {
 	}
 
 	// Prepare some data.
-	mp1 := g4.MoveAndPosition{
-		Move: g4.TokenMove(g4.Red, 8),
-		Position: g4.Position{
-			BoardStr:      "ry6|8|8|8|8|8|8|rryy4",
-			Direction:     g4.UP,
-			ColorWithMove: g4.Red,
-		},
-	}
-	mp2 := g4.MoveAndPosition{
-		Move: g4.TiltMove(g4.LEFT),
-		Position: g4.Position{
-			BoardStr:      "8|8|8|8|8|8|8|8",
-			Direction:     g4.DOWN,
-			ColorWithMove: g4.Red,
-		},
-	}
-	mp3 := g4.MoveAndPosition{
-		Move: g4.TokenMove(g4.Yellow, 1),
-		Position: g4.Position{
-			BoardStr:      "yy6|8|8|8|8|8|8|yyyy4",
-			Direction:     g4.LEFT,
-			ColorWithMove: g4.Red,
-		},
-	}
+	m1 := g4.TokenMove(g4.Red, 8)
+	m2 := g4.TiltMove(g4.LEFT)
+	m3 := g4.TokenMove(g4.Yellow, 1)
 
 	// Send a move from ch1.
-	errCh1 = asyncSendMoveAndPosition(mp1, ch1)
-	mpCh2, errCh2 := asyncReadMoveAndPosition(ch2)
+	errCh1 = asyncSendMove(m1, ch1)
+	moveCh2, errCh2 := asyncReadMove(ch2)
 
 	err1 = <-errCh1
 	if err1 != nil {
-		t.Errorf("ch1.SendMoveAndPosition returned an error: %v", err1)
+		t.Errorf("ch1.SendMove returned an error: %v", err1)
 	}
 	select {
 	case err := <-errCh2:
-		t.Errorf("ch2.ReadMoveAndPosition returned an error: %v", err)
-	case mp := <-mpCh2:
-		if mp != mp1 {
-			t.Errorf("ch2.ReadMoveAndPosition returned %v but expected %v", mp, mp1)
+		t.Errorf("ch2.ReadMove returned an error: %v", err)
+	case move := <-moveCh2:
+		if move != m1 {
+			t.Errorf("ch2.ReadMove returned %v but expected %v", move, m1)
 		}
 	}
 
 	// Send a move from ch2.
-	mpCh1, errCh1 := asyncReadMoveAndPosition(ch1)
-	errCh2 = asyncSendMoveAndPosition(mp2, ch2)
+	moveCh1, errCh1 := asyncReadMove(ch1)
+	errCh2 = asyncSendMove(m2, ch2)
 
 	select {
 	case err := <-errCh1:
-		t.Errorf("ch1.ReadMoveAndPosition returned an error: %v", err)
-	case mp := <-mpCh1:
-		if mp != mp2 {
-			t.Errorf("ch1.ReadMoveAndPosition returned %v but expected %v", mp, mp2)
+		t.Errorf("ch1.ReadMove returned an error: %v", err)
+	case move := <-moveCh1:
+		if move != m2 {
+			t.Errorf("ch1.ReadMove returned %v but expected %v", move, m2)
 		}
 	}
 	err2 = <-errCh2
 	if err2 != nil {
-		t.Errorf("ch2.SendMoveAndPosition returned an error: %v", err2)
+		t.Errorf("ch2.SendMove returned an error: %v", err2)
 	}
 
 	// Send a move from ch1 again.
-	errCh1 = asyncSendMoveAndPosition(mp3, ch1)
-	mpCh2, errCh2 = asyncReadMoveAndPosition(ch2)
+	errCh1 = asyncSendMove(m3, ch1)
+	moveCh2, errCh2 = asyncReadMove(ch2)
 
 	err1 = <-errCh1
 	if err1 != nil {
-		t.Errorf("ch1.SendMoveAndPosition returned an error: %v", err1)
+		t.Errorf("ch1.SendMove returned an error: %v", err1)
 	}
 	select {
 	case err := <-errCh2:
-		t.Errorf("ch2.ReadMoveAndPosition returned an error: %v", err)
-	case mp := <-mpCh2:
-		if mp != mp3 {
-			t.Errorf("ch2.ReadMoveAndPosition returned %v but expected %v", mp, mp3)
+		t.Errorf("ch2.ReadMove returned an error: %v", err)
+	case mp := <-moveCh2:
+		if mp != m3 {
+			t.Errorf("ch2.ReadMove returned %v but expected %v", mp, m3)
 		}
 	}
 

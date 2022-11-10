@@ -26,14 +26,7 @@ import (
 	"testing"
 )
 
-var exampleMP = g4.MoveAndPosition{
-	Move: g4.TokenMove(g4.Red, 8),
-	Position: g4.Position{
-		BoardStr:      "ry6|8|8|8|8|8|8|rryy4",
-		Direction:     g4.UP,
-		ColorWithMove: g4.Red,
-	},
-}
+var exampleMove = g4.TokenMove(g4.Red, 8)
 
 func TestCloseErrorOnNilConn(t *testing.T) {
 	ch := ws.NewWithConnector(ws.DefautConfig, &MockConnector{})
@@ -157,7 +150,7 @@ func TestConnectServeSuccess(t *testing.T) {
 	}
 }
 
-func TestReadMoveAndPositionError(t *testing.T) {
+func TestReadMoveError(t *testing.T) {
 	conn := &MockConn{}
 	connector := &MockConnector{
 		DialContextReturnValue: ConnError{
@@ -174,13 +167,13 @@ func TestReadMoveAndPositionError(t *testing.T) {
 
 	// Setup ReadJSON return values.
 	conn.NextError = errors.New("nothing to read")
-	_, err = ch.ReadMoveAndPosition()
+	_, err = ch.ReadMove()
 	if err == nil {
 		t.Error("expected error but got <nil>")
 	}
 }
 
-func TestReadMoveAndPositionSuccess(t *testing.T) {
+func TestReadMoveSuccess(t *testing.T) {
 	conn := &MockConn{}
 	connector := &MockConnector{
 		DialContextReturnValue: ConnError{
@@ -197,21 +190,21 @@ func TestReadMoveAndPositionSuccess(t *testing.T) {
 
 	// Setup ReadJSON return values.
 	conn.NextError = nil
-	conn.WriteJSON(exampleMP)
+	conn.WriteJSON(exampleMove)
 	conn.NextJSON = conn.LastJSON
 
-	// Call ReadMoveAndPosition and test return values.
-	mp, err := ch.ReadMoveAndPosition()
+	// Call ReadMove and test return values.
+	mp, err := ch.ReadMove()
 	if err != nil {
-		t.Errorf("error in ReadMoveAndPosition: %v", err)
+		t.Errorf("error in ReadMove: %v", err)
 	}
-	if mp != exampleMP {
-		t.Errorf("wrong return value for ReadMoveAndPosition: want %v but got %v",
-			exampleMP, mp)
+	if mp != exampleMove {
+		t.Errorf("wrong return value for ReadMove: want %v but got %v",
+			exampleMove, mp)
 	}
 }
 
-func TestSendMoveAndPositionError(t *testing.T) {
+func TestSendMoveError(t *testing.T) {
 	conn := &MockConn{}
 	connector := &MockConnector{
 		DialContextReturnValue: ConnError{
@@ -228,13 +221,13 @@ func TestSendMoveAndPositionError(t *testing.T) {
 
 	// Setup WriteJSON return values.
 	conn.NextError = errors.New("nothing to write")
-	err = ch.SendMoveAndPosition(exampleMP)
+	err = ch.SendMove(exampleMove)
 	if err == nil {
 		t.Error("expected error but got <nil>")
 	}
 }
 
-func TestSendMoveAndPositionSuccess(t *testing.T) {
+func TestSendMoveSuccess(t *testing.T) {
 	conn := &MockConn{}
 	connector := &MockConnector{
 		DialContextReturnValue: ConnError{
@@ -251,14 +244,14 @@ func TestSendMoveAndPositionSuccess(t *testing.T) {
 
 	// Setup ReadJSON return values.
 	conn.NextError = nil
-	conn.WriteJSON(exampleMP)
+	conn.WriteJSON(exampleMove)
 	expectedJSON := conn.LastJSON
 	conn.LastJSON = nil
 
-	// Call ReadMoveAndPosition and test return values.
-	err = ch.SendMoveAndPosition(exampleMP)
+	// Call ReadMove and test return values.
+	err = ch.SendMove(exampleMove)
 	if err != nil {
-		t.Errorf("error in SendMoveAndPosition: %v", err)
+		t.Errorf("error in SendMove: %v", err)
 	}
 	if string(conn.LastJSON) != string(expectedJSON) {
 		t.Errorf("wrong JSON sent: want %v but got %v",

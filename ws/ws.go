@@ -98,8 +98,8 @@ func (ch *Channel) ConnectWait(ctx context.Context, urlStr string) error {
 }
 
 // TODO: check that connection is correctly established.
-func (ch *Channel) SendMoveAndPosition(mp g4.MoveAndPosition) error {
-	err := ch.conn.WriteJSON(mp)
+func (ch *Channel) SendMove(move g4.Move) error {
+	err := ch.conn.WriteJSON(move)
 	if err != nil {
 		return fmt.Errorf("error writing to connection: %w", err)
 	}
@@ -107,13 +107,13 @@ func (ch *Channel) SendMoveAndPosition(mp g4.MoveAndPosition) error {
 }
 
 // TODO: check that connection is correctly established.
-func (ch *Channel) ReadMoveAndPosition() (g4.MoveAndPosition, error) {
-	mp := g4.MoveAndPosition{}
-	err := ch.conn.ReadJSON(&mp)
+func (ch *Channel) ReadMove() (g4.Move, error) {
+	move := g4.Move{}
+	err := ch.conn.ReadJSON(&move)
 	if err != nil {
-		return mp, fmt.Errorf("error reading from connection: %w", err)
+		return move, fmt.Errorf("error reading from connection: %w", err)
 	}
-	return mp, nil
+	return move, nil
 }
 
 func (ch *Channel) Close() error {

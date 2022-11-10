@@ -29,23 +29,13 @@ type Position struct {
 	ColorWithMove Color
 }
 
-// MoveAndPosition represents a game position after a move.
-//
-// When a peer makes a move, it sends a MoveAndPosition to the
-// other peer with the move and the position it thinks must be
-// the resulting position.
-type MoveAndPosition struct {
-	Move     Move
-	Position Position
-}
-
 type Channel interface {
 
-	// SendMoveAndPosition sends the selected move to the opponent.
-	SendMoveAndPosition(mp MoveAndPosition) error // TODO: too complex to send and receive position, just do the bare minimum...
+	// SendMove sends the selected move to the opponent.
+	SendMove(move Move) error // TODO: too complex to send and receive position, just do the bare minimum...
 
-	// ReadMoveAndPosition waits for the oponent to send a move and receives it.
-	ReadMoveAndPosition() (MoveAndPosition, error)
+	// ReadMove waits for the oponent to send a move and receives it.
+	ReadMove() (Move, error)
 
 	// ConnectWait tries to connect to the provided URL.
 	//
