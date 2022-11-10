@@ -2,6 +2,7 @@ package bits
 
 import "g4"
 
+// ToArray returns an array representation of the board.
 func (b Board) ToArray() [8][8]g4.Color {
 	var array [8][8]g4.Color
 	// Beware the coordinates system is not the same as for bitboards.
