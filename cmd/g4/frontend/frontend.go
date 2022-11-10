@@ -3,6 +3,8 @@ package frontend
 import (
 	"fmt"
 	"g4"
+	"g4/bits"
+	"g4/simulation"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -28,7 +30,7 @@ type mainModel struct {
 
 	// App-level information.
 	url           string
-	isAppaired    bool
+	port          int
 	colorWithMove g4.Color
 	playerColor   g4.Color
 
@@ -37,8 +39,12 @@ type mainModel struct {
 	game g4.Game
 }
 
-func New() mainModel {
+func New(url string, port int) mainModel {
+	board, _ := bits.FromString("8|8|8|8|8|8|8|8")
+	game, _ := simulation.FromBoard(board, g4.Yellow, g4.UP)
 	return mainModel{
+		url:  url,
+		port: port,
 		selector: selectorArea{
 			SelectedMove: 3,
 			Disabled:     false,
@@ -65,11 +71,12 @@ func New() mainModel {
 				g4.TiltMove(g4.RIGHT),
 			},
 		},
+		game: game,
 	}
 }
 
 func (m mainModel) Init() tea.Cmd {
-	return nil
+	return connect(m.url, m.port)
 }
 
 // isQuitMessage returns true if the message signals to quit the program.
@@ -100,9 +107,16 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 
-	switch msg.(type) {
+	switch msg := msg.(type) {
+
+	// On successful connection.
+	case g4.Channel:
+		m.ch = msg
+		return m, chooseColor(m.ch)
+
+	// When a move is played.
 	case receivedMove:
-		move := g4.Move(msg.(receivedMove))
+		move := g4.Move(msg)
 		game, err := m.game.Apply(move)
 		if err != nil {
 			m.ch.Close()
@@ -110,7 +124,7 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 		m.game = game
-		m.board.Board = game.ToArray()
+		m.board.Board, m.board.Direction = game.ToArray()
 		if m.colorWithMove == g4.Yellow {
 			m.colorWithMove = g4.Red
 		} else {

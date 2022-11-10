@@ -54,7 +54,8 @@ func arrayToImage(array [8][8]g4.Color, squareWidth int) image.Image {
 }
 
 type playArea struct {
-	Board [8][8]g4.Color
+	Board     [8][8]g4.Color
+	Direction g4.Direction
 }
 
 func (m playArea) View() string {

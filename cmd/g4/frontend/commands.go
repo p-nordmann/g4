@@ -28,6 +28,12 @@ func connect(url string, port int) tea.Cmd {
 	}
 }
 
+func chooseColor(ch g4.Channel) tea.Cmd {
+	return func() tea.Msg {
+		return receivedMove(g4.TokenMove(g4.Yellow, 1))
+	}
+}
+
 func watchChannel(channel g4.Channel) tea.Cmd {
 	return func() tea.Msg {
 		// TODO: wait for channel to be closed and return.
