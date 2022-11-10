@@ -22,13 +22,6 @@ import (
 	"context"
 )
 
-// Position provides a standard way to describe a position.
-type Position struct {
-	BoardStr      string
-	Direction     Direction
-	ColorWithMove Color
-}
-
 type Channel interface {
 
 	// SendMove sends the selected move to the opponent.
