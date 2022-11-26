@@ -29,7 +29,7 @@ func playLoop(url string, port int) error {
 }
 
 func main() {
-	fmt.Println("listening to:", fmt.Sprintf("localhost:%d", port))
+	fmt.Println("listening to:", fmt.Sprintf(":%d", port))
 	fmt.Println("reaching at:", url)
 	playLoop(url, port)
 }

@@ -18,7 +18,7 @@ func connect(url string, port int) tea.Cmd {
 		channel := ws.New(ws.ChannelConfig{
 			DialTimeout:  1 * time.Second,
 			ServeTimeout: 60 * time.Second,
-			Address:      fmt.Sprintf("localhost:%d", port),
+			Address:      fmt.Sprintf(":%d", port),
 		})
 		err := channel.ConnectWait(context.Background(), url) // TODO: shouldn't have to specify the protocol.
 		if err != nil {
