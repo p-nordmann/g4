@@ -13,6 +13,8 @@ const (
 )
 
 // Direction describes the direction of gravity.
+//
+// TODO: only use direction information for rotations. We always consider the gravity to be downward.
 type Direction int
 
 const (
@@ -21,18 +23,3 @@ const (
 	DOWN
 	RIGHT
 )
-
-func (d Direction) String() string {
-	switch d {
-	case UP:
-		return "UP"
-	case LEFT:
-		return "<="
-	case DOWN:
-		return "DOWN"
-	case RIGHT:
-		return "=>"
-	default:
-		return "UNKNOWN"
-	}
-}

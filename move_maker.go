@@ -33,13 +33,13 @@ func (m Move) String() string {
 	if m.Type == Tilt {
 		switch m.Direction {
 		case UP:
-			return "UP"
+			return "-"
 		case LEFT:
-			return "LEFT"
+			return "<90"
 		case RIGHT:
-			return "RIGHT"
+			return "90>"
 		case DOWN:
-			return "DOWN"
+			return "180"
 
 		}
 	}

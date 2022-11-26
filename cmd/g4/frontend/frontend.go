@@ -41,7 +41,7 @@ type mainModel struct {
 
 func New(url string, port int) mainModel {
 	board, _ := bits.FromString("8|8|8|8|8|8|8|8")
-	game, _ := simulation.FromBoard(board, g4.Yellow, g4.UP)
+	game, _ := simulation.FromBoard(board, g4.Yellow)
 	moves, _ := game.Generate()
 	return mainModel{
 		url:  url,
@@ -51,10 +51,8 @@ func New(url string, port int) mainModel {
 			Disabled:      true,
 			PossibleMoves: moves,
 		},
-		listing: listingArea{},
-		board: playArea{
-			Direction: g4.UP,
-		},
+		listing:       listingArea{},
+		board:         playArea{},
 		game:          game,
 		colorWithMove: g4.Yellow,
 	}
@@ -118,7 +116,7 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 		m.game = game
-		m.board.Board, m.board.Direction = game.ToArray()
+		m.board.Board = game.ToArray()
 		if m.colorWithMove == g4.Yellow {
 			m.colorWithMove = g4.Red
 		} else {
@@ -154,7 +152,6 @@ func (m mainModel) View() string {
 		playAreaStyle.Render(m.board.View()),
 		lipgloss.JoinVertical(
 			lipgloss.Center,
-			m.board.Direction.String(),
 			sidePannelStyle.Render(
 				m.selector.View(),
 			),

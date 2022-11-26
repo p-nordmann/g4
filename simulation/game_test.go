@@ -208,7 +208,7 @@ func TestGenerate(t *testing.T) {
 		if err != nil {
 			t.Errorf("example %d: error in FromString: %v", k, err)
 		}
-		game, err := simulation.FromBoard(board, ex.color, ex.direction)
+		game, err := simulation.FromBoard(board, ex.color)
 		if err != nil {
 			t.Errorf("example %d: error in FromBoard: %v", k, err)
 		}
@@ -289,7 +289,7 @@ func TestApplyCorrectMoves(t *testing.T) {
 		if err != nil {
 			t.Errorf("example %d: error in FromString: %v", k, err)
 		}
-		game, err = simulation.FromBoard(board1, ex.color, ex.direction)
+		game, err = simulation.FromBoard(board1, ex.color)
 		if err != nil {
 			t.Errorf("example %d: error in FromBoard (in): %v", k, err)
 		}
@@ -303,7 +303,7 @@ func TestApplyCorrectMoves(t *testing.T) {
 		if err != nil {
 			t.Errorf("example %d: error in FromString: %v", k, err)
 		}
-		want, err := simulation.FromBoard(board2, ex.outColor, ex.outDirection)
+		want, err := simulation.FromBoard(board2, ex.outColor)
 		if err != nil {
 			t.Errorf("example %d: error in FromBoard (out): %v", k, err)
 		}
@@ -350,7 +350,7 @@ func TestApplyInvalidMoves(t *testing.T) {
 		if err != nil {
 			t.Errorf("example %d: error in FromString: %v", k, err)
 		}
-		game, err := simulation.FromBoard(board, ex.color, ex.direction)
+		game, err := simulation.FromBoard(board, ex.color)
 		if err != nil {
 			t.Errorf("example %d: error in FromBoard (in): %v", k, err)
 		}

@@ -5,17 +5,16 @@ import (
 	"g4"
 )
 
-func (g Game) ToArray() ([8][8]g4.Color, g4.Direction) {
-	return g.board.ToArray(), g.direction
+func (g Game) ToArray() [8][8]g4.Color {
+	return g.board.ToArray()
 }
 
 type Game struct {
-	board     g4.Board
-	color     g4.Color
-	direction g4.Direction
+	board g4.Board
+	color g4.Color
 }
 
-func FromBoard(board g4.Board, color g4.Color, direction g4.Direction) (Game, error) {
+func FromBoard(board g4.Board, color g4.Color) (Game, error) {
 	switch color {
 	case g4.Red:
 	case g4.Yellow:
@@ -23,9 +22,8 @@ func FromBoard(board g4.Board, color g4.Color, direction g4.Direction) (Game, er
 		return Game{}, fmt.Errorf("unexpected color: %v", color)
 	}
 	return Game{
-		board:     board,
-		color:     color,
-		direction: direction,
+		board: board,
+		color: color,
 	}, nil
 }
 
@@ -51,18 +49,7 @@ func (g Game) Generate() ([]g4.Move, error) {
 	}
 
 	// Tilt moves.
-	if g.direction != g4.UP {
-		moves = append(moves, g4.TiltMove(g4.UP))
-	}
-	if g.direction != g4.LEFT {
-		moves = append(moves, g4.TiltMove(g4.LEFT))
-	}
-	if g.direction != g4.DOWN {
-		moves = append(moves, g4.TiltMove(g4.DOWN))
-	}
-	if g.direction != g4.RIGHT {
-		moves = append(moves, g4.TiltMove(g4.RIGHT))
-	}
+	moves = append(moves, g4.TiltMove(g4.LEFT), g4.TiltMove(g4.DOWN), g4.TiltMove(g4.RIGHT))
 
 	// Token moves.
 	for column, height := range heights {
@@ -76,7 +63,6 @@ func (g Game) Generate() ([]g4.Move, error) {
 
 // Apply performs a move from a game state.
 //
-// TODO: direction arithmetics for cleaner code.
 // TODO: save successive states taken through moves (in particular for tilt moves)
 //
 //	for display.
@@ -84,35 +70,16 @@ func (g Game) Apply(move g4.Move) (g4.Game, error) {
 	switch t := move.Type; t {
 	case g4.Tilt:
 		var times int
-		switch [2]g4.Direction{g.direction, move.Direction} {
-		case [2]g4.Direction{g4.UP, g4.LEFT}:
-			times = 3
-		case [2]g4.Direction{g4.UP, g4.DOWN}:
-			times = 2
-		case [2]g4.Direction{g4.UP, g4.RIGHT}:
+		switch move.Direction {
+		case g4.LEFT:
 			times = 1
-		case [2]g4.Direction{g4.LEFT, g4.UP}:
-			times = 1
-		case [2]g4.Direction{g4.LEFT, g4.DOWN}:
+		case g4.DOWN:
 			times = 2
-		case [2]g4.Direction{g4.LEFT, g4.RIGHT}:
-			times = 3
-		case [2]g4.Direction{g4.DOWN, g4.LEFT}:
-			times = 1
-		case [2]g4.Direction{g4.DOWN, g4.RIGHT}:
-			times = 3
-		case [2]g4.Direction{g4.DOWN, g4.UP}:
-			times = 2
-		case [2]g4.Direction{g4.RIGHT, g4.LEFT}:
-			times = 2
-		case [2]g4.Direction{g4.RIGHT, g4.DOWN}:
-			times = 1
-		case [2]g4.Direction{g4.RIGHT, g4.UP}:
+		case g4.RIGHT:
 			times = 3
 		default:
 			return g, g4.ErrorInvalidMove{}
 		}
-		g.direction = move.Direction
 		g.board = g.board.RotateLeft(times).ApplyGravity()
 	case g4.Token:
 		if move.ColumnIdx < 0 || move.ColumnIdx >= 8 {
