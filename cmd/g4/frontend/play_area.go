@@ -8,9 +8,13 @@ import (
 	ti "github.com/knipferrc/teacup/image"
 )
 
+// TODO: build a tea.Model that can be initialized with size params and can draw boards.
+
 const (
-	squareWidth = 6
-	stride      = 2
+	squareWidth        = 6
+	stride             = 2
+	squareWidthPreview = 2
+	stridePreview      = 1
 )
 
 func paintRect(x, y int, w, h int, col color.RGBA, img *image.RGBA) {
@@ -21,7 +25,18 @@ func paintRect(x, y int, w, h int, col color.RGBA, img *image.RGBA) {
 	}
 }
 
-func arrayToImage(array [8][8]g4.Color, squareWidth int) image.Image {
+func paintCircle(x, y int, w int, col color.RGBA, img *image.RGBA) {
+	cX, cY := float64(2*x+w-1)/2, float64(2*y+w-1)/2
+	for i := x; i < x+w; i++ {
+		for j := y; j < y+w; j++ {
+			if (float64(i)-cX)*(float64(i)-cX)+(float64(j)-cY)*(float64(j)-cY) < float64(w*w)/4 {
+				img.SetRGBA(i, j, col)
+			}
+		}
+	}
+}
+
+func arrayToImage(array [8][8]g4.Color, squareWidth, stride int) image.Image {
 	rect := image.Rectangle{
 		Min: image.Point{0, 0},
 		Max: image.Point{8*squareWidth + 7*stride, 8*squareWidth + 7*stride},
@@ -38,9 +53,7 @@ func arrayToImage(array [8][8]g4.Color, squareWidth int) image.Image {
 			default:
 				continue
 			}
-			paintRect((squareWidth+stride)*x, (squareWidth+stride)*y+1, squareWidth, squareWidth-2, col, img)
-			paintRect((squareWidth+stride)*x+1, (squareWidth+stride)*y, squareWidth-2, squareWidth, col, img)
-			paintRect((squareWidth+stride)*x+1, (squareWidth+stride)*y+1, squareWidth-2, squareWidth-2, col, img)
+			paintCircle((squareWidth+stride)*x, (squareWidth+stride)*y, squareWidth, col, img)
 		}
 	}
 
@@ -57,7 +70,16 @@ type playArea struct {
 	Board [8][8]g4.Color
 }
 
+type previewArea struct {
+	Board [8][8]g4.Color
+}
+
 func (m playArea) View() string {
-	img := arrayToImage(m.Board, squareWidth)
+	img := arrayToImage(m.Board, squareWidth, stride)
 	return ti.ToString(8*squareWidth+7*stride, img)
+}
+
+func (m previewArea) View() string {
+	img := arrayToImage(m.Board, squareWidthPreview, stridePreview)
+	return ti.ToString(8*squareWidthPreview+7*stridePreview, img)
 }

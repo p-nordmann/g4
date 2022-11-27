@@ -10,13 +10,14 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+// TODO: each sub-models should manage their own state, ex: each could have their own simulator,
+//		or they should be provided with services (dependency injection?).
+
 var (
 	sidePannelStyle = lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).
 			BorderForeground(lipgloss.Color("grey"))
 	playAreaStyle = lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).
 			BorderForeground(lipgloss.Color("grey"))
-	// listingStyle = lipgloss.NewStyle().Italic(true).Foreground(lipgloss.Color("#ffaa99"))
-	// spinnerStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("69"))
 )
 
 type mainModel struct {
@@ -27,6 +28,7 @@ type mainModel struct {
 	listing  listingArea
 	board    playArea
 	selector selectorArea
+	preview  previewArea
 
 	// App-level information.
 	url           string
@@ -53,6 +55,7 @@ func New(url string, port int) mainModel {
 		},
 		listing:       listingArea{},
 		board:         playArea{},
+		preview:       previewArea{},
 		game:          game,
 		colorWithMove: g4.Yellow,
 	}
@@ -132,6 +135,7 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			fmt.Println(err)
 			return m, tea.Quit
 		}
+		m.preview.Board = m.game.ToArray()
 
 	default:
 		// Handle move selection.
@@ -139,6 +143,13 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// selector should be service-agnostic.
 		selector, cmd := m.selector.Update(m.ch, msg)
 		m.selector = selector
+
+		// TODO: find a nice way to do this: here for instance if we pass a random message to selector,
+		//	it will trigger the following.
+		if !m.selector.Disabled && m.selector.SelectedMove >= 0 {
+			game, _ := m.game.Apply(m.selector.PossibleMoves[m.selector.SelectedMove])
+			m.preview.Board = game.ToArray()
+		}
 		return m, cmd
 	}
 	return m, nil
@@ -154,6 +165,9 @@ func (m mainModel) View() string {
 			lipgloss.Center,
 			sidePannelStyle.Render(
 				m.selector.View(),
+			),
+			sidePannelStyle.Render(
+				m.preview.View(),
 			),
 		),
 	)
