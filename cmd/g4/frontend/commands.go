@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"g4"
 	"g4/ws"
+	"os"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 // TODO: maybe need a frontend struct to hold the channel and provide commands factories.
+
+// TODO: provide a way to gracefully handle errors.
 
 // connect(url, port) is a command for connecting to the peer.
 func connect(url string, port int) tea.Cmd {
@@ -22,7 +25,8 @@ func connect(url string, port int) tea.Cmd {
 		})
 		err := channel.ConnectWait(context.Background(), url) // TODO: shouldn't have to specify the protocol.
 		if err != nil {
-			panic(fmt.Errorf("error connecting through channel: %w", err))
+			fmt.Fprintf(os.Stderr, "error connecting through channel: %v", err) // Cannot panic here.
+			return tea.Quit()
 		}
 		return channel
 	}
