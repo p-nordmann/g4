@@ -12,7 +12,7 @@ var port int
 var url string
 
 func init() {
-	flag.IntVar(&port, "port", 8080, "port to listen to")
+	flag.IntVar(&port, "port", 80, "port to listen to")
 	flag.Parse()
 	url = flag.Arg(0)
 }
@@ -21,7 +21,7 @@ func init() {
 func playLoop(url string, port int) error {
 
 	p := tea.NewProgram(frontend.New(url, port), tea.WithAltScreen())
-	if err := p.Start(); err != nil {
+	if _, err := p.Run(); err != nil {
 		fmt.Println(err)
 		return err
 	}
