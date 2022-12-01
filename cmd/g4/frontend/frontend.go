@@ -116,7 +116,10 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if err != nil {
 			m.ch.Close()
 			fmt.Println(err)
-			return m, tea.Quit
+			return errorModel{
+				err:      err,
+				position: game.String(),
+			}, nil
 		}
 		m.game = game
 		m.board.Board = game.ToArray()
@@ -133,7 +136,10 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if err != nil {
 			m.ch.Close()
 			fmt.Println(err)
-			return m, tea.Quit
+			return errorModel{
+				err:      err,
+				position: game.String(),
+			}, nil
 		}
 		m.preview.Board = m.game.ToArray()
 
@@ -156,8 +162,7 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m mainModel) View() string {
-	var s string
-	s += lipgloss.JoinHorizontal(
+	return lipgloss.JoinHorizontal(
 		lipgloss.Top,
 		sidePannelStyle.Render(m.listing.View()),
 		playAreaStyle.Render(m.board.View()),
@@ -171,5 +176,4 @@ func (m mainModel) View() string {
 			),
 		),
 	)
-	return s
 }

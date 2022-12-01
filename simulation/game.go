@@ -9,6 +9,10 @@ func (g Game) ToArray() [8][8]g4.Color {
 	return g.board.ToArray()
 }
 
+func (g Game) String() string {
+	return g.board.String()
+}
+
 type Game struct {
 	board g4.Board
 	color g4.Color

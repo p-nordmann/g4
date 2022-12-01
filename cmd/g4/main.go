@@ -19,8 +19,7 @@ func init() {
 
 // TODO: rough draft/outline of main game loop
 func playLoop(url string, port int) error {
-
-	p := tea.NewProgram(frontend.New(url, port), tea.WithAltScreen())
+	p := tea.NewProgram(frontend.New(url, port))
 	if _, err := p.Run(); err != nil {
 		fmt.Println(err)
 		return err

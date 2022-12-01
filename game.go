@@ -17,6 +17,7 @@ type Game interface {
 	Generate() ([]Move, error)
 
 	ToArray() [8][8]Color
+	String() string
 }
 
 type Board interface {
@@ -41,6 +42,7 @@ type Board interface {
 	Heights() [8]int
 
 	ToArray() [8][8]Color
+	String() string
 }
 
 // TODO: split board into multiple interfaces?
