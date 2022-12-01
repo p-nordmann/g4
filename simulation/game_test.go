@@ -138,16 +138,14 @@ func TestUtils(t *testing.T) {
 
 func TestGenerate(t *testing.T) {
 	examples := []struct {
-		in        string
-		color     g4.Color
-		direction g4.Direction
-		out       []g4.Move
-		err       error
+		in    string
+		color g4.Color
+		out   []g4.Move
+		err   error
 	}{
 		{
-			in:        "8|8|8|8|8|8|8|8",
-			color:     g4.Yellow,
-			direction: g4.UP,
+			in:    "8|8|8|8|8|8|8|8",
+			color: g4.Yellow,
 			out: concatMoves(
 				tiltMoves([]g4.Direction{g4.RIGHT, g4.DOWN, g4.LEFT}),
 				tokenMoves(g4.Yellow, []int{0, 1, 2, 3, 4, 5, 6, 7}),
@@ -155,9 +153,8 @@ func TestGenerate(t *testing.T) {
 			err: nil,
 		},
 		{
-			in:        "ryryryry|8|8|8|8|8|8|8",
-			color:     g4.Yellow,
-			direction: g4.UP,
+			in:    "ryryryry|8|8|8|8|8|8|8",
+			color: g4.Yellow,
 			out: concatMoves(
 				tiltMoves([]g4.Direction{g4.RIGHT, g4.DOWN, g4.LEFT}),
 				tokenMoves(g4.Yellow, []int{1, 2, 3, 4, 5, 6, 7}),
@@ -165,42 +162,37 @@ func TestGenerate(t *testing.T) {
 			err: nil,
 		},
 		{
-			in:        "8|8|8|8|8|8|8|8",
-			color:     g4.Yellow,
-			direction: g4.LEFT,
+			in:    "8|8|8|8|8|8|8|8",
+			color: g4.Yellow,
 			out: concatMoves(
-				tiltMoves([]g4.Direction{g4.UP, g4.RIGHT, g4.DOWN}),
+				tiltMoves([]g4.Direction{g4.LEFT, g4.RIGHT, g4.DOWN}),
 				tokenMoves(g4.Yellow, []int{0, 1, 2, 3, 4, 5, 6, 7}),
 			),
 			err: nil,
 		},
 		{
-			in:        "ryryryry|ryryryry|ryryryry|yryryryr|yryryryr|yryryryr|ryryryry|ryryryry",
-			color:     g4.Yellow,
-			direction: g4.LEFT,
-			out:       nil,
-			err:       g4.ErrorGameOver(g4.Empty),
+			in:    "ryryryry|ryryryry|ryryryry|yryryryr|yryryryr|yryryryr|ryryryry|ryryryry",
+			color: g4.Yellow,
+			out:   nil,
+			err:   g4.ErrorGameOver(g4.Empty),
 		},
 		{
-			in:        "rrrr4|yryr4|8|8|8|8|8|8",
-			color:     g4.Yellow,
-			direction: g4.LEFT,
-			out:       nil,
-			err:       g4.ErrorGameOver(g4.Red),
+			in:    "rrrr4|yryr4|8|8|8|8|8|8",
+			color: g4.Yellow,
+			out:   nil,
+			err:   g4.ErrorGameOver(g4.Red),
 		},
 		{
-			in:        "ryry4|ryyy4|r7|r7|8|8|8|8",
-			color:     g4.Yellow,
-			direction: g4.LEFT,
-			out:       nil,
-			err:       g4.ErrorGameOver(g4.Red),
+			in:    "ryry4|ryyy4|r7|r7|8|8|8|8",
+			color: g4.Yellow,
+			out:   nil,
+			err:   g4.ErrorGameOver(g4.Red),
 		},
 		{
-			in:        "ryry4|yryy4|rrr5|yyyr4|8|8|8|8",
-			color:     g4.Yellow,
-			direction: g4.LEFT,
-			out:       nil,
-			err:       g4.ErrorGameOver(g4.Red),
+			in:    "ryry4|yryy4|rrr5|yyyr4|8|8|8|8",
+			color: g4.Yellow,
+			out:   nil,
+			err:   g4.ErrorGameOver(g4.Red),
 		},
 	}
 	for k, ex := range examples {
@@ -224,31 +216,26 @@ func TestGenerate(t *testing.T) {
 
 func TestApplyCorrectMoves(t *testing.T) {
 	examples := []struct {
-		in           string
-		color        g4.Color
-		direction    g4.Direction
-		moves        []g4.Move
-		out          string
-		outColor     g4.Color
-		outDirection g4.Direction
+		in       string
+		color    g4.Color
+		moves    []g4.Move
+		out      string
+		outColor g4.Color
 	}{
 		{
-			in:        "8|8|8|8|8|8|8|8",
-			color:     g4.Yellow,
-			direction: g4.UP,
+			in:    "8|8|8|8|8|8|8|8",
+			color: g4.Yellow,
 			moves: []g4.Move{
 				g4.TokenMove(g4.Yellow, 0),
 				g4.TokenMove(g4.Red, 0),
 				g4.TokenMove(g4.Yellow, 0),
 			},
-			out:          "yry5|8|8|8|8|8|8|8",
-			outColor:     g4.Red,
-			outDirection: g4.UP,
+			out:      "yry5|8|8|8|8|8|8|8",
+			outColor: g4.Red,
 		},
 		{
-			in:        "8|8|8|8|8|8|8|8",
-			color:     g4.Yellow,
-			direction: g4.UP,
+			in:    "8|8|8|8|8|8|8|8",
+			color: g4.Yellow,
 			moves: []g4.Move{
 				g4.TokenMove(g4.Yellow, 0),
 				g4.TokenMove(g4.Red, 1),
@@ -256,31 +243,26 @@ func TestApplyCorrectMoves(t *testing.T) {
 				g4.TokenMove(g4.Red, 3),
 				g4.TiltMove(g4.LEFT),
 			},
-			out:          "ryry4|8|8|8|8|8|8|8",
-			outColor:     g4.Red,
-			outDirection: g4.LEFT,
+			out:      "8|8|8|8|8|8|8|yryr4",
+			outColor: g4.Red,
 		},
 		{
-			in:        "rr6|y7|r7|yy6|8|8|8|8",
-			color:     g4.Yellow,
-			direction: g4.UP,
+			in:    "rr6|y7|r7|yy6|8|8|8|8",
+			color: g4.Yellow,
 			moves: []g4.Move{
 				g4.TiltMove(g4.LEFT),
 			},
-			out:          "yryr4|yr6|8|8|8|8|8|8",
-			outColor:     g4.Red,
-			outDirection: g4.LEFT,
+			out:      "8|8|8|8|8|8|ry6|ryry4",
+			outColor: g4.Red,
 		},
 		{
-			in:        "rr6|y7|r7|yy6|8|8|8|8",
-			color:     g4.Yellow,
-			direction: g4.UP,
+			in:    "rr6|y7|r7|yy6|8|8|8|8",
+			color: g4.Yellow,
 			moves: []g4.Move{
 				g4.TiltMove(g4.RIGHT),
 			},
-			out:          "8|8|8|8|8|8|ry6|ryry4",
-			outColor:     g4.Red,
-			outDirection: g4.RIGHT,
+			out:      "yryr4|yr6|8|8|8|8|8|8",
+			outColor: g4.Red,
 		},
 	}
 	for k, ex := range examples {
@@ -316,32 +298,28 @@ func TestApplyCorrectMoves(t *testing.T) {
 
 func TestApplyInvalidMoves(t *testing.T) {
 	examples := []struct {
-		in        string
-		color     g4.Color
-		direction g4.Direction
-		move      g4.Move
-		err       error
+		in    string
+		color g4.Color
+		move  g4.Move
+		err   error
 	}{
 		{
-			in:        "8|8|8|8|8|8|8|8",
-			color:     g4.Yellow,
-			direction: g4.UP,
-			move:      g4.TiltMove(g4.UP),
-			err:       g4.ErrorInvalidMove{},
+			in:    "8|8|8|8|8|8|8|8",
+			color: g4.Yellow,
+			move:  g4.TiltMove(g4.UP),
+			err:   g4.ErrorInvalidMove{},
 		},
 		{
-			in:        "ryryryry|8|8|8|8|8|8|8",
-			color:     g4.Yellow,
-			direction: g4.UP,
-			move:      g4.TokenMove(g4.Yellow, 0),
-			err:       g4.ErrorInvalidMove{},
+			in:    "ryryryry|8|8|8|8|8|8|8",
+			color: g4.Yellow,
+			move:  g4.TokenMove(g4.Yellow, 0),
+			err:   g4.ErrorInvalidMove{},
 		},
 		{
-			in:        "8|8|8|8|8|8|8|8",
-			color:     g4.Yellow,
-			direction: g4.UP,
-			move:      g4.TokenMove(g4.Yellow, 8), // NB: invalid column.
-			err:       g4.ErrorInvalidMove{},
+			in:    "8|8|8|8|8|8|8|8",
+			color: g4.Yellow,
+			move:  g4.TokenMove(g4.Yellow, 8), // NB: invalid column.
+			err:   g4.ErrorInvalidMove{},
 		},
 		// TODO: add a move with invalid type.
 	}
@@ -361,4 +339,4 @@ func TestApplyInvalidMoves(t *testing.T) {
 	}
 }
 
-// TODO(Pierre-Louis): test perft.
+// TODO: test perft.
