@@ -48,7 +48,9 @@ func (m selectorArea) Update(ch g4.Channel, msg tea.Msg) (selectorArea, tea.Cmd)
 				m.SelectedMove = 0
 			}
 		case "enter":
-			cmd = tea.Batch(sendMove(ch, m.PossibleMoves[m.SelectedMove]), receiveMove(ch))
+			if m.SelectedMove >= 0 {
+				cmd = tea.Batch(sendMove(ch, m.PossibleMoves[m.SelectedMove]), receiveMove(ch))
+			}
 		}
 	}
 	return m, cmd
