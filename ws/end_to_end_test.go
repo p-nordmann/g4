@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func asyncConnectWait(ctx context.Context, URL string, ch g4.Channel) chan error {
+func asyncConnectWait(ctx context.Context, URL string, ch *ws.Channel) chan error {
 	errCh := make(chan error)
 	go func() {
 		errCh <- ch.ConnectWait(ctx, URL)
@@ -17,7 +17,7 @@ func asyncConnectWait(ctx context.Context, URL string, ch g4.Channel) chan error
 }
 
 // SendMove sends the selected move to the opponent.
-func asyncSendMove(move g4.Move, ch g4.Channel) chan error {
+func asyncSendMove(move g4.Move, ch *ws.Channel) chan error {
 	errCh := make(chan error)
 	go func() {
 		errCh <- ch.SendMove(move)
@@ -26,7 +26,7 @@ func asyncSendMove(move g4.Move, ch g4.Channel) chan error {
 }
 
 // ReadMove waits for the oponent to send a move and receives it.
-func asyncReadMove(ch g4.Channel) (chan g4.Move, chan error) {
+func asyncReadMove(ch *ws.Channel) (chan g4.Move, chan error) {
 	moveCh := make(chan g4.Move)
 	errCh := make(chan error)
 	go func() {

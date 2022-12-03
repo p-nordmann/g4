@@ -7,7 +7,7 @@ import (
 // RotateLeft applies `times` left rotations on the board.
 //
 // It does not make the token drop according to new gravity.
-func (b Board) RotateLeft(times int) g4.Board {
+func (b Board) RotateLeft(times int) Board {
 	for k := 0; k < times%4; k++ {
 		b.yellowBits = b.yellowBits.RotateLeft()
 		b.redBits = b.redBits.RotateLeft()
@@ -21,7 +21,7 @@ func (b Board) RotateLeft(times int) g4.Board {
 //   - computes bits with a gap immediately below them
 //   - drop one square
 //   - iterate (8 times)
-func (b Board) ApplyGravity() g4.Board {
+func (b Board) ApplyGravity() Board {
 	for k := 0; k < 8; k++ {
 		gaps := ^(b.yellowBits | b.redBits)
 		yellowDrop := gaps & b.yellowBits.South()
@@ -33,7 +33,7 @@ func (b Board) ApplyGravity() g4.Board {
 }
 
 // AddToken adds a token on top of requested column.
-func (b Board) AddToken(column int, color g4.Color) g4.Board {
+func (b Board) AddToken(column int, color g4.Color) Board {
 	height := b.Heights()[column]
 	if height < 8 {
 		switch color {

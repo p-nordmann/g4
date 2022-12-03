@@ -32,27 +32,27 @@ func connect(url string, port int) tea.Cmd {
 	}
 }
 
-func chooseColor(ch g4.Channel) tea.Cmd {
+func chooseColor(ch *ws.Channel) tea.Cmd {
 	return func() tea.Msg {
 		color, _ := ch.ChooseColor()
 		return color
 	}
 }
 
-func watchChannel(channel g4.Channel) tea.Cmd {
+func watchChannel(channel *ws.Channel) tea.Cmd {
 	return func() tea.Msg {
 		// TODO: wait for channel to be closed and return.
 		return nil
 	}
 }
 
-func sendMove(ch g4.Channel, move g4.Move) tea.Cmd {
+func sendMove(ch *ws.Channel, move g4.Move) tea.Cmd {
 	return func() tea.Msg {
 		ch.SendMove(move)
 		return move
 	}
 }
-func receiveMove(ch g4.Channel) tea.Cmd {
+func receiveMove(ch *ws.Channel) tea.Cmd {
 	return func() tea.Msg {
 		move, _ := ch.ReadMove()
 		return move

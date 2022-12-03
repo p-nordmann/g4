@@ -3,6 +3,7 @@ package simulation
 import (
 	"fmt"
 	"g4"
+	"g4/bits"
 )
 
 func (g Game) ToArray() [8][8]g4.Color {
@@ -14,11 +15,11 @@ func (g Game) String() string {
 }
 
 type Game struct {
-	board g4.Board
+	board bits.Board
 	color g4.Color
 }
 
-func FromBoard(board g4.Board, color g4.Color) (Game, error) {
+func FromBoard(board bits.Board, color g4.Color) (Game, error) {
 	switch color {
 	case g4.Red:
 	case g4.Yellow:
@@ -70,7 +71,7 @@ func (g Game) Generate() ([]g4.Move, error) {
 // TODO: save successive states taken through moves (in particular for tilt moves)
 //
 //	for display.
-func (g Game) Apply(move g4.Move) (g4.Game, error) {
+func (g Game) Apply(move g4.Move) (Game, error) {
 	switch t := move.Type; t {
 	case g4.Tilt:
 		var times int

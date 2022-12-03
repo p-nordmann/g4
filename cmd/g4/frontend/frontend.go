@@ -5,6 +5,7 @@ import (
 	"g4"
 	"g4/bits"
 	"g4/simulation"
+	"g4/ws"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -37,8 +38,8 @@ type mainModel struct {
 	playerColor   g4.Color
 
 	// Communication.
-	ch   g4.Channel
-	game g4.Game
+	ch   *ws.Channel
+	game simulation.Game
 }
 
 func New(url string, port int) mainModel {
@@ -96,7 +97,7 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 
 	// On successful connection.
-	case g4.Channel:
+	case *ws.Channel:
 		m.ch = msg
 		return m, chooseColor(m.ch)
 

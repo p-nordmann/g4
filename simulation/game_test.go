@@ -266,7 +266,7 @@ func TestApplyCorrectMoves(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		var game g4.Game
+		var game simulation.Game
 		board1, err := bits.FromString(ex.in)
 		if err != nil {
 			t.Errorf("example %d: error in FromString: %v", k, err)
@@ -289,9 +289,8 @@ func TestApplyCorrectMoves(t *testing.T) {
 		if err != nil {
 			t.Errorf("example %d: error in FromBoard (out): %v", k, err)
 		}
-		got := game.(simulation.Game)
-		if got != want {
-			t.Errorf("example %d: wrong game state after game moves: got %v but wanted %v", k, got, want)
+		if game != want {
+			t.Errorf("example %d: wrong game state after game moves: got %v but wanted %v", k, game, want)
 		}
 	}
 }

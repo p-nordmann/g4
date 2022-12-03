@@ -2,6 +2,7 @@ package frontend
 
 import (
 	"g4"
+	"g4/ws"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -29,7 +30,7 @@ func (m selectorArea) View() string {
 	return s
 }
 
-func (m selectorArea) Update(ch g4.Channel, msg tea.Msg) (selectorArea, tea.Cmd) {
+func (m selectorArea) Update(ch *ws.Channel, msg tea.Msg) (selectorArea, tea.Cmd) {
 	if m.Disabled {
 		return m, nil
 	}
