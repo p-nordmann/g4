@@ -1,11 +1,11 @@
-package frontend
+package main
 
 import (
-	"fmt"
+	"context"
+	"errors"
 	"g4"
 	"g4/bits"
 	"g4/simulation"
-	"g4/ws"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -32,23 +32,20 @@ type mainModel struct {
 	preview  previewArea
 
 	// App-level information.
-	url           string
-	port          int
+	descr         string
 	colorWithMove g4.Color
 	playerColor   g4.Color
 
 	// Communication.
-	ch   *ws.Channel
 	game simulation.Game
 }
 
-func New(url string, port int) mainModel {
+func NewFrontend(descr string) mainModel {
 	board, _ := bits.FromString("8|8|8|8|8|8|8|8")
 	game, _ := simulation.FromBoard(board, g4.Yellow)
 	moves, _ := game.Generate()
 	return mainModel{
-		url:  url,
-		port: port,
+		descr: descr,
 		selector: selectorArea{
 			SelectedMove:  -1,
 			Disabled:      true,
@@ -63,7 +60,11 @@ func New(url string, port int) mainModel {
 }
 
 func (m mainModel) Init() tea.Cmd {
-	return connect(m.url, m.port)
+	cmd, err := p2pService.connect(context.Background(), m.descr)
+	if err != nil {
+		return handleError(err)
+	}
+	return cmd
 }
 
 // isQuitMessage returns true if the message signals to quit the program.
@@ -79,11 +80,50 @@ func isQuitMessage(msg tea.Msg) bool {
 	return false
 }
 
+// NB: this is safe to pass m by reference here, because the outter Update function receives it
+// by value.
+// On the contrary, passing by value wouldn't work here because we cannot assign m in the outter
+// Update function.
+func (m *mainModel) updateMove(move g4.Move) error {
+	game, err := m.game.Apply(move)
+	if err != nil {
+		return err
+	}
+	m.game = game
+	m.board.Board = game.ToArray()
+	if m.colorWithMove == g4.Yellow {
+		m.colorWithMove = g4.Red
+	} else {
+		m.colorWithMove = g4.Yellow
+	}
+	m.listing.History = append(m.listing.History, move)
+	m.listing.Waiting = !m.listing.Waiting
+	m.selector.Disabled = !m.selector.Disabled
+	m.selector.SelectedMove = -1
+	m.selector.PossibleMoves, err = game.Generate()
+	if err != nil {
+		return err
+	}
+	m.preview.Board = m.game.ToArray()
+	return nil
+}
+
 func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	// Handle quit message.
 	if isQuitMessage(msg) {
-		return m, tea.Quit
+		return errorModel{
+			err:      errors.New("SIGTERM"),
+			position: m.game.String(),
+		}, tea.Quit
+	}
+
+	// Handle error message.
+	if err, ok := msg.(error); ok && err != nil {
+		return errorModel{
+			err:      err,
+			position: m.game.String(),
+		}, nil
 	}
 
 	// Handle window size.
@@ -96,59 +136,47 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 
-	// On successful connection.
-	case *ws.Channel:
-		m.ch = msg
-		return m, chooseColor(m.ch)
+	case ConnectionSuccessful:
+		cmd, err := p2pService.chooseColor(context.Background())
+		if err != nil {
+			return m, handleError(err)
+		}
+		return m, cmd
 
-	// When color is chosen (at the start).
-	case g4.Color:
-		m.playerColor = msg
-		if msg == m.colorWithMove {
+	case ColorFound:
+		color := g4.Color(msg)
+		m.playerColor = color
+		if color == m.colorWithMove {
 			m.selector.Disabled = false
 		} else {
-			return m, receiveMove(m.ch)
+			cmd, err := p2pService.receiveMove(context.Background())
+			if err != nil {
+				return m, handleError(err)
+			}
+			return m, cmd
 		}
 
-	// When a move is played.
-	case g4.Move:
-		move := msg
-		game, err := m.game.Apply(move)
+	case SentMove:
+		err := m.updateMove(g4.Move(msg))
 		if err != nil {
-			m.ch.Close()
-			fmt.Println(err)
-			return errorModel{
-				err:      err,
-				position: game.String(),
-			}, nil
+			return m, handleError(err)
 		}
-		m.game = game
-		m.board.Board = game.ToArray()
-		if m.colorWithMove == g4.Yellow {
-			m.colorWithMove = g4.Red
-		} else {
-			m.colorWithMove = g4.Yellow
-		}
-		m.listing.History = append(m.listing.History, move)
-		m.listing.Waiting = !m.listing.Waiting
-		m.selector.Disabled = !m.selector.Disabled
-		m.selector.SelectedMove = -1
-		m.selector.PossibleMoves, err = game.Generate()
+		cmd, err := p2pService.receiveMove(context.Background())
 		if err != nil {
-			m.ch.Close()
-			fmt.Println(err)
-			return errorModel{
-				err:      err,
-				position: game.String(),
-			}, nil
+			return m, handleError(err)
 		}
-		m.preview.Board = m.game.ToArray()
+		return m, cmd
+
+	case ReceivedMove:
+		err := m.updateMove(g4.Move(msg))
+		if err != nil {
+			return m, handleError(err)
+		}
 
 	default:
 		// Handle move selection.
-		// TODO: should not delegate channel to selector.
-		// selector should be service-agnostic.
-		selector, cmd := m.selector.Update(m.ch, msg)
+		// TODO: selector should be service-agnostic?
+		selector, cmd := m.selector.Update(msg)
 		m.selector = selector
 
 		// TODO: find a nice way to do this: here for instance if we pass a random message to selector,

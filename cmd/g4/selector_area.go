@@ -1,8 +1,7 @@
-package frontend
+package main
 
 import (
 	"g4"
-	"g4/ws"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -30,11 +29,10 @@ func (m selectorArea) View() string {
 	return s
 }
 
-func (m selectorArea) Update(ch *ws.Channel, msg tea.Msg) (selectorArea, tea.Cmd) {
+func (m selectorArea) Update(msg tea.Msg) (selectorArea, tea.Cmd) {
 	if m.Disabled {
 		return m, nil
 	}
-	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -50,9 +48,13 @@ func (m selectorArea) Update(ch *ws.Channel, msg tea.Msg) (selectorArea, tea.Cmd
 			}
 		case "enter":
 			if m.SelectedMove >= 0 {
-				cmd = tea.Batch(sendMove(ch, m.PossibleMoves[m.SelectedMove]), receiveMove(ch))
+				sendCmd, err := p2pService.sendMove(m.PossibleMoves[m.SelectedMove])
+				if err != nil {
+					return m, handleError(err)
+				}
+				return m, sendCmd
 			}
 		}
 	}
-	return m, cmd
+	return m, nil
 }

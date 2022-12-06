@@ -1,8 +1,13 @@
-package frontend
+package main
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
 )
+
+func handleError(err error) tea.Cmd {
+	p2pService.ch.Close()
+	return func() tea.Msg { return err }
+}
 
 type errorModel struct {
 	err      error
