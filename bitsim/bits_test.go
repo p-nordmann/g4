@@ -1,7 +1,7 @@
-package bits_test
+package bitsim_test
 
 import (
-	b "g4/bits"
+	bitsim "g4/bitsim"
 	"testing"
 )
 
@@ -36,7 +36,7 @@ func TestHeights(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		in, err := b.FromString(ex.in)
+		in, err := bitsim.FromString(ex.in)
 		if err != nil {
 			t.Errorf("example %d: FromString returned an error %v", k, err)
 		}
@@ -77,7 +77,7 @@ func TestHasYellowConnect4(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		b, _ := b.FromString(ex.in)
+		b, _ := bitsim.FromString(ex.in)
 		if b.HasYellowConnect4() != ex.out {
 			t.Errorf("example %d: got %v but want %v", k, b.HasYellowConnect4(), ex.out)
 		}
@@ -115,7 +115,7 @@ func TestHasRedConnect4(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		b, _ := b.FromString(ex.in)
+		b, _ := bitsim.FromString(ex.in)
 		if b.HasRedConnect4() != ex.out {
 			t.Errorf("example %d: got %v but want %v", k, b.HasRedConnect4(), ex.out)
 		}

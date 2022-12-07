@@ -1,4 +1,4 @@
-package bits
+package bitsim
 
 // rotationLookup provides a mapping {column}->{corresponding rotated line}.
 var rotationLookup = [...]bitboard{

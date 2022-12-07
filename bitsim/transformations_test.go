@@ -1,8 +1,8 @@
-package bits_test
+package bitsim_test
 
 import (
 	"g4"
-	"g4/bits"
+	"g4/bitsim"
 	"testing"
 )
 
@@ -54,9 +54,9 @@ func TestRotateLeft(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		got, _ := bits.FromString(ex.in)
+		got, _ := bitsim.FromString(ex.in)
 		got = got.RotateLeft(ex.times)
-		want, _ := bits.FromString(ex.out)
+		want, _ := bitsim.FromString(ex.out)
 		if got != want {
 			t.Errorf("example %d: got != want", k)
 		}
@@ -78,9 +78,9 @@ func TestApplyGravity(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		got, _ := bits.FromString(ex.in)
+		got, _ := bitsim.FromString(ex.in)
 		got = got.ApplyGravity()
-		want, _ := bits.FromString(ex.out)
+		want, _ := bitsim.FromString(ex.out)
 		if got != want {
 			t.Errorf("example %d: got != want", k)
 		}
@@ -120,9 +120,9 @@ func TestAddToken(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		got, _ := bits.FromString(ex.in)
+		got, _ := bitsim.FromString(ex.in)
 		got = got.AddToken(ex.column, ex.color)
-		want, _ := bits.FromString(ex.out)
+		want, _ := bitsim.FromString(ex.out)
 		if got != want {
 			t.Errorf("example %d: got != want", k)
 		}

@@ -4,8 +4,7 @@ import (
 	"context"
 	"errors"
 	"g4"
-	"g4/bits"
-	"g4/simulation"
+	"g4/bitsim"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -37,12 +36,12 @@ type mainModel struct {
 	playerColor   g4.Color
 
 	// Communication.
-	game simulation.Game
+	game bitsim.Game
 }
 
 func NewFrontend(descr string) mainModel {
-	board, _ := bits.FromString("8|8|8|8|8|8|8|8")
-	game, _ := simulation.FromBoard(board, g4.Yellow)
+	board, _ := bitsim.FromString("8|8|8|8|8|8|8|8")
+	game, _ := bitsim.FromBoard(board, g4.Yellow)
 	moves, _ := game.Generate()
 	return mainModel{
 		descr: descr,

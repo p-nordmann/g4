@@ -1,4 +1,4 @@
-package bits
+package bitsim
 
 import "testing"
 

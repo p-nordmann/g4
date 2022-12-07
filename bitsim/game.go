@@ -1,9 +1,8 @@
-package simulation
+package bitsim
 
 import (
 	"fmt"
 	"g4"
-	"g4/bits"
 )
 
 func (g Game) ToArray() [8][8]g4.Color {
@@ -15,11 +14,11 @@ func (g Game) String() string {
 }
 
 type Game struct {
-	board bits.Board
+	board Board
 	color g4.Color
 }
 
-func FromBoard(board bits.Board, color g4.Color) (Game, error) {
+func FromBoard(board Board, color g4.Color) (Game, error) {
 	switch color {
 	case g4.Red:
 	case g4.Yellow:
