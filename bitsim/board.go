@@ -20,7 +20,7 @@ const (
 	StartingPosition string = "8|8|8|8|8|8|8|8"
 )
 
-// boardFromString returns a board built from a description string.
+// FromString returns a board built from a description string.
 //
 // Format is the following:
 // col1|col2|col3|...|col8
@@ -30,7 +30,7 @@ const (
 //
 // NB: multiple integers one after the other is also valid.
 // example: y7|... is equivalent to y1123|... or r43|...
-func boardFromString(s string) (b Board, err error) {
+func FromString(s string) (b Board, err error) {
 	// Parse yellow bits.
 	yellowString := strings.ReplaceAll(
 		strings.ReplaceAll(s, "r", "1"),

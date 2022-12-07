@@ -8,6 +8,7 @@ import "fmt"
 // as we work with 64-bit machines we might as well use memory.
 type Color byte
 
+// TODO: might be useful to use 1 << iota to be able to denote multiple colors in a single variable.
 const (
 	Empty Color = iota
 	Yellow
@@ -15,8 +16,6 @@ const (
 )
 
 // Direction describes the direction of gravity.
-//
-// TODO: only use direction information for rotations. We always consider the gravity to be downward.
 type Direction int
 
 const (

@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestBoardFromString(t *testing.T) {
+func TestFromString(t *testing.T) {
 	one := bitboard(1)
 	ones8 := bitboard(255)
 	examples := []struct {
@@ -47,20 +47,20 @@ func TestBoardFromString(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		if out, err := boardFromString(ex.in); err != nil || out != ex.out {
+		if out, err := FromString(ex.in); err != nil || out != ex.out {
 			t.Errorf("example %d: got (%v, %v) but want (%v, %v)", k, out, err, ex.out, nil)
 		}
 	}
 }
 
-func TestBoardFromStringError(t *testing.T) {
+func TestFromStringError(t *testing.T) {
 	examples := []string{
 		"y7|ry6|r7|8|8|8|8",
 		"yrryyrry|8|8|8|8|rrryyyyryr|8|8",
 		"zry5|8|8|8|8|8|8|8",
 	}
 	for k, ex := range examples {
-		if out, err := boardFromString(ex); err == nil {
+		if out, err := FromString(ex); err == nil {
 			t.Errorf("example %d: got (%v, %v) but expected error", k, out, err)
 		}
 	}
@@ -76,7 +76,7 @@ func TestBoardString(t *testing.T) {
 		"y6y|8|8|8|8|yyy2ryy|8|8",
 	}
 	for _, ex := range examples {
-		board, err := boardFromString(ex)
+		board, err := FromString(ex)
 		if err != nil {
 			t.Errorf("expected valid board but got error: %v", err)
 		}
@@ -118,7 +118,7 @@ func TestBoardHeights(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		in, err := boardFromString(ex.in)
+		in, err := FromString(ex.in)
 		if err != nil {
 			t.Errorf("example %d: FromString returned an error %v", k, err)
 		}
@@ -159,7 +159,7 @@ func TestBoardHasYellowConnect4(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		b, _ := boardFromString(ex.in)
+		b, _ := FromString(ex.in)
 		if b.hasYellowConnect4() != ex.out {
 			t.Errorf("example %d: got %v but want %v", k, b.hasYellowConnect4(), ex.out)
 		}
@@ -197,7 +197,7 @@ func TestBoardHasRedConnect4(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		b, _ := boardFromString(ex.in)
+		b, _ := FromString(ex.in)
 		if b.hasRedConnect4() != ex.out {
 			t.Errorf("example %d: got %v but want %v", k, b.hasRedConnect4(), ex.out)
 		}
@@ -252,9 +252,9 @@ func TestBoardRotateLeft(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		got, _ := boardFromString(ex.in)
+		got, _ := FromString(ex.in)
 		got = got.RotateLeft(ex.times)
-		want, _ := boardFromString(ex.out)
+		want, _ := FromString(ex.out)
 		if got != want {
 			t.Errorf("example %d: got != want", k)
 		}
@@ -276,9 +276,9 @@ func TestBoardApplyGravity(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		got, _ := boardFromString(ex.in)
+		got, _ := FromString(ex.in)
 		got = got.ApplyGravity()
-		want, _ := boardFromString(ex.out)
+		want, _ := FromString(ex.out)
 		if got != want {
 			t.Errorf("example %d: got != want", k)
 		}
@@ -318,11 +318,13 @@ func TestBoardAddToken(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		got, _ := boardFromString(ex.in)
+		got, _ := FromString(ex.in)
 		got = got.AddToken(ex.column, ex.color)
-		want, _ := boardFromString(ex.out)
+		want, _ := FromString(ex.out)
 		if got != want {
 			t.Errorf("example %d: got != want", k)
 		}
 	}
 }
+
+// TODO: benchmark Board.String.

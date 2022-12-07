@@ -40,7 +40,8 @@ type mainModel struct {
 }
 
 func NewFrontend(descr string) mainModel {
-	game, _ := bitsim.FromString(bitsim.StartingPosition, g4.Yellow)
+	board, _ := bitsim.FromString(bitsim.StartingPosition)
+	game := bitsim.Game{Board: board, Mover: g4.Yellow}
 	moves, _ := game.Generate()
 	return mainModel{
 		descr: descr,
@@ -88,7 +89,7 @@ func (m *mainModel) updateMove(move g4.Move) error {
 		return err
 	}
 	m.game = game
-	m.board.Board = game.ToArray()
+	m.board.Board = game.Board.ToArray()
 	if m.colorWithMove == g4.Yellow {
 		m.colorWithMove = g4.Red
 	} else {
@@ -102,7 +103,7 @@ func (m *mainModel) updateMove(move g4.Move) error {
 	if err != nil {
 		return err
 	}
-	m.preview.Board = m.game.ToArray()
+	m.preview.Board = m.game.Board.ToArray()
 	return nil
 }
 
@@ -112,7 +113,7 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if isQuitMessage(msg) {
 		return errorModel{
 			err:      errors.New("SIGTERM"),
-			position: m.game.String(),
+			position: m.game.Board.String(),
 		}, tea.Quit
 	}
 
@@ -120,7 +121,7 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if err, ok := msg.(error); ok && err != nil {
 		return errorModel{
 			err:      err,
-			position: m.game.String(),
+			position: m.game.Board.String(),
 		}, nil
 	}
 
@@ -181,7 +182,7 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		//	it will trigger the following.
 		if !m.selector.Disabled && m.selector.SelectedMove >= 0 {
 			game, _ := m.game.Apply(m.selector.PossibleMoves[m.selector.SelectedMove])
-			m.preview.Board = game.ToArray()
+			m.preview.Board = game.Board.ToArray()
 		}
 		return m, cmd
 	}

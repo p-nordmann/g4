@@ -1,42 +1,20 @@
 package bitsim
 
 import (
-	"fmt"
 	"g4"
 )
 
-// FromString builds a new Game instance with the board in requested position.
-//
-// `s` is a description of the board. Use bitsim.StartingPosition for usual starting position.
-// `color` denotes the player with the move. Usually g4.Yellow goes first.
-func FromString(s string, color g4.Color) (Game, error) {
-	switch color {
-	case g4.Red:
-	case g4.Yellow:
-	default:
-		return Game{}, fmt.Errorf("unexpected color: %v", color)
-	}
-	board, err := boardFromString(s)
-	if err != nil {
-		return Game{}, fmt.Errorf("failed to parse board string: %w", err)
-	}
-	return Game{
-		board: board,
-		color: color,
-	}, nil
-}
-
+// Game holds the state of the game and provides an interface to make moves.
 type Game struct {
-	board Board
-	color g4.Color
-}
 
-func (g Game) ToArray() [8][8]g4.Color {
-	return g.board.ToArray()
-}
+	// Board holds the state of the board.
+	//
+	// TODO: inheritance instead of attribute?
+	// TODO: maybe use an interface so it could apply to 2/3-player boards?
+	Board Board
 
-func (g Game) String() string {
-	return g.board.String()
+	// Mover denotes the player with the move.
+	Mover g4.Color
 }
 
 // Generate computes the list of possible moves from a given position.
@@ -44,8 +22,11 @@ func (g Game) Generate() ([]g4.Move, error) {
 	var moves []g4.Move
 
 	// Look for connect 4s.
-	hasYellowConnect4 := g.board.hasYellowConnect4()
-	hasRedConnect4 := g.board.hasRedConnect4()
+	//
+	// TODO: maybe use a single method board.hasConnect4() []g4.Color?
+	// 	(or g4.Color with flags like Red | Yellow for multiple colors)
+	hasYellowConnect4 := g.Board.hasYellowConnect4()
+	hasRedConnect4 := g.Board.hasRedConnect4()
 	if hasYellowConnect4 && hasRedConnect4 {
 		return moves, g4.ErrorGameOver(g4.Empty) // Draw.
 	} else if hasYellowConnect4 {
@@ -55,7 +36,7 @@ func (g Game) Generate() ([]g4.Move, error) {
 	}
 
 	// Check whether board is full.
-	heights := g.board.heights()
+	heights := g.Board.heights()
 	if heights[0]+heights[1]+heights[2]+heights[3]+heights[4]+heights[5]+heights[6]+heights[7] == 64 {
 		return moves, g4.ErrorGameOver(g4.Empty) // Draw.
 	}
@@ -66,7 +47,7 @@ func (g Game) Generate() ([]g4.Move, error) {
 	// Token moves.
 	for column, height := range heights {
 		if height < 8 {
-			moves = append(moves, g4.TokenMove(g.color, column))
+			moves = append(moves, g4.TokenMove(g.Mover, column))
 		}
 	}
 
@@ -88,24 +69,26 @@ func (g Game) Apply(move g4.Move) (Game, error) {
 		default:
 			return g, g4.ErrorInvalidMove{}
 		}
-		g.board = g.board.RotateLeft(times).ApplyGravity()
+		g.Board = g.Board.RotateLeft(times).ApplyGravity()
 	case g4.Token:
 		if move.ColumnIdx < 0 || move.ColumnIdx >= 8 {
 			return g, g4.ErrorInvalidMove{}
 		}
-		if g.board.heights()[move.ColumnIdx] == 8 {
+		if g.Board.heights()[move.ColumnIdx] == 8 {
 			return g, g4.ErrorInvalidMove{}
 		}
-		g.board = g.board.AddToken(move.ColumnIdx, g.color)
+		g.Board = g.Board.AddToken(move.ColumnIdx, g.Mover)
 	default:
 		return g, g4.ErrorInvalidMove{}
 	}
 
-	// Switch colors.
-	if g.color == g4.Red {
-		g.color = g4.Yellow
+	// Switch Mover.
+	//
+	// TODO: find a method that also works for 3 players?
+	if g.Mover == g4.Red {
+		g.Mover = g4.Yellow
 	} else {
-		g.color = g4.Red
+		g.Mover = g4.Red
 	}
 
 	return g, nil

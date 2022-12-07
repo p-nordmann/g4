@@ -195,10 +195,11 @@ func TestGenerate(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		game, err := bitsim.FromString(ex.in, ex.color)
+		board, err := bitsim.FromString(ex.in)
 		if err != nil {
 			t.Errorf("example %d: error in FromString: %v", k, err)
 		}
+		game := bitsim.Game{board, ex.color}
 		out, err := game.Generate()
 		if err != ex.err {
 			t.Errorf("example %d: Generate; invalid error: got %v but want %v", k, err, ex.err)
@@ -261,20 +262,22 @@ func TestApplyCorrectMoves(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		game, err := bitsim.FromString(ex.in, ex.color)
+		board, err := bitsim.FromString(ex.in)
 		if err != nil {
-			t.Errorf("example %d: error in FromBoard (in): %v", k, err)
+			t.Errorf("example %d: error in FromString (in): %v", k, err)
 		}
+		game := bitsim.Game{board, ex.color}
 		for i, move := range ex.moves {
 			game, err = game.Apply(move)
 			if err != nil {
 				t.Errorf("example %d: move %d: error in Apply: %v", k, i, err)
 			}
 		}
-		want, err := bitsim.FromString(ex.out, ex.outColor)
+		board, err = bitsim.FromString(ex.out)
 		if err != nil {
 			t.Errorf("example %d: error in FromString (out): %v", k, err)
 		}
+		want := bitsim.Game{board, ex.outColor}
 		if game != want {
 			t.Errorf("example %d: wrong game state after game moves: got %v but wanted %v", k, game, want)
 		}
@@ -309,10 +312,11 @@ func TestApplyInvalidMoves(t *testing.T) {
 		// TODO: add a move with invalid type.
 	}
 	for k, ex := range examples {
-		game, err := bitsim.FromString(ex.in, ex.color)
+		board, err := bitsim.FromString(ex.in)
 		if err != nil {
 			t.Errorf("example %d: error in FromString (in): %v", k, err)
 		}
+		game := bitsim.Game{board, ex.color}
 		_, err = game.Apply(ex.move)
 		if err != ex.err {
 			t.Errorf("example %d: incorrect error: got %v but want %v", k, err, ex.err)
@@ -320,4 +324,4 @@ func TestApplyInvalidMoves(t *testing.T) {
 	}
 }
 
-// TODO: test perft.
+// TODO: test perft (benchmark).
