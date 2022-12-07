@@ -73,8 +73,8 @@ func TestNorth(t *testing.T) {
 	for k, ex := range examples {
 		in, _ := bitboardFromString(ex.in)
 		out, _ := bitboardFromString(ex.out)
-		if in.North() != out {
-			t.Errorf("example %d: got %v but want %v", k, in.North(), out)
+		if in.north() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.north(), out)
 		}
 	}
 }
@@ -104,8 +104,8 @@ func TestNorth2(t *testing.T) {
 	for k, ex := range examples {
 		in, _ := bitboardFromString(ex.in)
 		out, _ := bitboardFromString(ex.out)
-		if in.North2() != out {
-			t.Errorf("example %d: got %v but want %v", k, in.North2(), out)
+		if in.north2() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.north2(), out)
 		}
 	}
 }
@@ -135,39 +135,8 @@ func TestNorth3(t *testing.T) {
 	for k, ex := range examples {
 		in, _ := bitboardFromString(ex.in)
 		out, _ := bitboardFromString(ex.out)
-		if in.North3() != out {
-			t.Errorf("example %d: got %v but want %v", k, in.North3(), out)
-		}
-	}
-}
-
-func TestWest(t *testing.T) {
-	examples := []struct {
-		in  string
-		out string
-	}{
-		{
-			in:  "x7|8|8|8|8|8|8|8",
-			out: "8|8|8|8|8|8|8|8",
-		},
-		{
-			in:  "8|x7|8|8|8|8|8|8",
-			out: "x7|8|8|8|8|8|8|8",
-		},
-		{
-			in:  "8|8|8|8|8|8|1x6|8",
-			out: "8|8|8|8|8|1x6|8|8",
-		},
-		{
-			in:  "8|8|8|8|8|8|8|8",
-			out: "8|8|8|8|8|8|8|8",
-		},
-	}
-	for k, ex := range examples {
-		in, _ := bitboardFromString(ex.in)
-		out, _ := bitboardFromString(ex.out)
-		if in.West() != out {
-			t.Errorf("example %d: got %v but want %v", k, in.West(), out)
+		if in.north3() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.north3(), out)
 		}
 	}
 }
@@ -197,8 +166,8 @@ func TestSouth(t *testing.T) {
 	for k, ex := range examples {
 		in, _ := bitboardFromString(ex.in)
 		out, _ := bitboardFromString(ex.out)
-		if in.South() != out {
-			t.Errorf("example %d: got %v but want %v", k, in.South(), out)
+		if in.south() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.south(), out)
 		}
 	}
 }
@@ -228,8 +197,8 @@ func TestEast(t *testing.T) {
 	for k, ex := range examples {
 		in, _ := bitboardFromString(ex.in)
 		out, _ := bitboardFromString(ex.out)
-		if in.East() != out {
-			t.Errorf("example %d: got %v but want %v", k, in.East(), out)
+		if in.east() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.east(), out)
 		}
 	}
 }
@@ -259,8 +228,8 @@ func TestEast2(t *testing.T) {
 	for k, ex := range examples {
 		in, _ := bitboardFromString(ex.in)
 		out, _ := bitboardFromString(ex.out)
-		if in.East2() != out {
-			t.Errorf("example %d: got %v but want %v", k, in.East2(), out)
+		if in.east2() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.east2(), out)
 		}
 	}
 }
@@ -290,8 +259,8 @@ func TestEast3(t *testing.T) {
 	for k, ex := range examples {
 		in, _ := bitboardFromString(ex.in)
 		out, _ := bitboardFromString(ex.out)
-		if in.East3() != out {
-			t.Errorf("example %d: got %v but want %v", k, in.East3(), out)
+		if in.east3() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.east3(), out)
 		}
 	}
 }
@@ -313,8 +282,8 @@ func TestNorthWest(t *testing.T) {
 	for k, ex := range examples {
 		in, _ := bitboardFromString(ex.in)
 		out, _ := bitboardFromString(ex.out)
-		if in.NorthWest() != out {
-			t.Errorf("example %d: got %v but want %v", k, in.NorthWest(), out)
+		if in.northWest() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.northWest(), out)
 		}
 	}
 }
@@ -340,8 +309,8 @@ func TestNorthWest2(t *testing.T) {
 	for k, ex := range examples {
 		in, _ := bitboardFromString(ex.in)
 		out, _ := bitboardFromString(ex.out)
-		if in.NorthWest2() != out {
-			t.Errorf("example %d: got %v but want %v", k, in.NorthWest2(), out)
+		if in.northWest2() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.northWest2(), out)
 		}
 	}
 }
@@ -367,8 +336,8 @@ func TestNorthWest3(t *testing.T) {
 	for k, ex := range examples {
 		in, _ := bitboardFromString(ex.in)
 		out, _ := bitboardFromString(ex.out)
-		if in.NorthWest3() != out {
-			t.Errorf("example %d: got %v but want %v", k, in.NorthWest3(), out)
+		if in.northWest3() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.northWest3(), out)
 		}
 	}
 }
@@ -390,8 +359,8 @@ func TestNorthEast(t *testing.T) {
 	for k, ex := range examples {
 		in, _ := bitboardFromString(ex.in)
 		out, _ := bitboardFromString(ex.out)
-		if in.NorthEast() != out {
-			t.Errorf("example %d: got %v but want %v", k, in.NorthEast(), out)
+		if in.northEast() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.northEast(), out)
 		}
 	}
 }
@@ -417,8 +386,8 @@ func TestNorthEast2(t *testing.T) {
 	for k, ex := range examples {
 		in, _ := bitboardFromString(ex.in)
 		out, _ := bitboardFromString(ex.out)
-		if in.NorthEast2() != out {
-			t.Errorf("example %d: got %v but want %v", k, in.NorthEast2(), out)
+		if in.northEast2() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.northEast2(), out)
 		}
 	}
 }
@@ -444,13 +413,13 @@ func TestNorthEast3(t *testing.T) {
 	for k, ex := range examples {
 		in, _ := bitboardFromString(ex.in)
 		out, _ := bitboardFromString(ex.out)
-		if in.NorthEast3() != out {
-			t.Errorf("example %d: got %v but want %v", k, in.NorthEast3(), out)
+		if in.northEast3() != out {
+			t.Errorf("example %d: got %v but want %v", k, in.northEast3(), out)
 		}
 	}
 }
 
-func TestHasConnect4(t *testing.T) {
+func TestBitboardHasConnect4(t *testing.T) {
 	examples := []struct {
 		in  string
 		out bool
@@ -498,13 +467,13 @@ func TestHasConnect4(t *testing.T) {
 	}
 	for k, ex := range examples {
 		in, _ := bitboardFromString(ex.in)
-		if in.HasConnect4() != ex.out {
-			t.Errorf("example %d: got %v but want %v", k, in.HasConnect4(), ex.out)
+		if in.hasConnect4() != ex.out {
+			t.Errorf("example %d: got %v but want %v", k, in.hasConnect4(), ex.out)
 		}
 	}
 }
 
-func TestCount(t *testing.T) {
+func TestBitboardCount(t *testing.T) {
 	examples := []struct {
 		in  string
 		out int
@@ -536,13 +505,13 @@ func TestCount(t *testing.T) {
 	}
 	for k, ex := range examples {
 		in, _ := bitboardFromString(ex.in)
-		if in.Count() != ex.out {
-			t.Errorf("example %d: got %v but want %v", k, in.Count(), ex.out)
+		if in.count() != ex.out {
+			t.Errorf("example %d: got %v but want %v", k, in.count(), ex.out)
 		}
 	}
 }
 
-func TestGetColumn(t *testing.T) {
+func TestBitboardGetColumn(t *testing.T) {
 	examples := []struct {
 		in     string
 		column int
@@ -578,7 +547,7 @@ func TestGetColumn(t *testing.T) {
 	}
 }
 
-func TestRotateLeft(t *testing.T) {
+func TestBitboardRotateLeft(t *testing.T) {
 	examples := []struct {
 		in  string
 		out string
@@ -610,7 +579,7 @@ func TestRotateLeft(t *testing.T) {
 	}
 	for k, ex := range examples {
 		got, _ := bitboardFromString(ex.in)
-		got = got.RotateLeft()
+		got = got.rotateLeft()
 		want, _ := bitboardFromString(ex.out)
 		if got != want {
 			t.Errorf("example %d: got %v but want %v", k, got, want)

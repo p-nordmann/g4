@@ -195,13 +195,9 @@ func TestGenerate(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		board, err := bitsim.FromString(ex.in)
+		game, err := bitsim.FromString(ex.in, ex.color)
 		if err != nil {
 			t.Errorf("example %d: error in FromString: %v", k, err)
-		}
-		game, err := bitsim.FromBoard(board, ex.color)
-		if err != nil {
-			t.Errorf("example %d: error in FromBoard: %v", k, err)
 		}
 		out, err := game.Generate()
 		if err != ex.err {
@@ -265,12 +261,7 @@ func TestApplyCorrectMoves(t *testing.T) {
 		},
 	}
 	for k, ex := range examples {
-		var game bitsim.Game
-		board1, err := bitsim.FromString(ex.in)
-		if err != nil {
-			t.Errorf("example %d: error in FromString: %v", k, err)
-		}
-		game, err = bitsim.FromBoard(board1, ex.color)
+		game, err := bitsim.FromString(ex.in, ex.color)
 		if err != nil {
 			t.Errorf("example %d: error in FromBoard (in): %v", k, err)
 		}
@@ -280,13 +271,9 @@ func TestApplyCorrectMoves(t *testing.T) {
 				t.Errorf("example %d: move %d: error in Apply: %v", k, i, err)
 			}
 		}
-		board2, err := bitsim.FromString(ex.out)
+		want, err := bitsim.FromString(ex.out, ex.outColor)
 		if err != nil {
-			t.Errorf("example %d: error in FromString: %v", k, err)
-		}
-		want, err := bitsim.FromBoard(board2, ex.outColor)
-		if err != nil {
-			t.Errorf("example %d: error in FromBoard (out): %v", k, err)
+			t.Errorf("example %d: error in FromString (out): %v", k, err)
 		}
 		if game != want {
 			t.Errorf("example %d: wrong game state after game moves: got %v but wanted %v", k, game, want)
@@ -322,13 +309,9 @@ func TestApplyInvalidMoves(t *testing.T) {
 		// TODO: add a move with invalid type.
 	}
 	for k, ex := range examples {
-		board, err := bitsim.FromString(ex.in)
+		game, err := bitsim.FromString(ex.in, ex.color)
 		if err != nil {
-			t.Errorf("example %d: error in FromString: %v", k, err)
-		}
-		game, err := bitsim.FromBoard(board, ex.color)
-		if err != nil {
-			t.Errorf("example %d: error in FromBoard (in): %v", k, err)
+			t.Errorf("example %d: error in FromString (in): %v", k, err)
 		}
 		_, err = game.Apply(ex.move)
 		if err != ex.err {

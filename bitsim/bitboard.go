@@ -65,74 +65,70 @@ func bitboardFromString(s string) (bitboard, error) {
 	return b, nil
 }
 
-func (b bitboard) North() bitboard {
+func (b bitboard) north() bitboard {
 	return (b << 1) & northMask
 }
 
-func (b bitboard) North2() bitboard {
+func (b bitboard) north2() bitboard {
 	return (b << 2) & north2Mask
 }
 
-func (b bitboard) North3() bitboard {
+func (b bitboard) north3() bitboard {
 	return (b << 3) & north3Mask
 }
 
-func (b bitboard) West() bitboard {
-	return b >> 8
-}
-
-func (b bitboard) South() bitboard {
+func (b bitboard) south() bitboard {
 	return (b >> 1) & southMask
 }
 
-func (b bitboard) East() bitboard {
+func (b bitboard) east() bitboard {
 	return b << 8
 }
 
-func (b bitboard) East2() bitboard {
+func (b bitboard) east2() bitboard {
 	return b << 16
 }
 
-func (b bitboard) East3() bitboard {
+func (b bitboard) east3() bitboard {
 	return b << 24
 }
 
-func (b bitboard) NorthWest() bitboard {
+func (b bitboard) northWest() bitboard {
 	return (b >> 7) & northMask
 }
 
-func (b bitboard) NorthWest2() bitboard {
+func (b bitboard) northWest2() bitboard {
 	return (b >> 14) & north2Mask
 }
 
-func (b bitboard) NorthWest3() bitboard {
+func (b bitboard) northWest3() bitboard {
 	return (b >> 21) & north3Mask
 }
 
-func (b bitboard) NorthEast() bitboard {
+func (b bitboard) northEast() bitboard {
 	return (b << 9) & northMask
 }
 
-func (b bitboard) NorthEast2() bitboard {
+func (b bitboard) northEast2() bitboard {
 	return (b << 18) & north2Mask
 }
 
-func (b bitboard) NorthEast3() bitboard {
+func (b bitboard) northEast3() bitboard {
 	return (b << 27) & north3Mask
 }
 
-// HasConnect4 returns whether the bitboard has a connect 4 pattern.
+// hasConnect4 returns whether the bitboard has a connect 4 pattern.
 // The pattern can occur horizontally, vertically or diagonally.
-func (b bitboard) HasConnect4() bool {
-	v4 := b & b.North() & b.North2() & b.North3()
-	h4 := b & b.East() & b.East2() & b.East3()
-	ld4 := b & b.NorthWest() & b.NorthWest2() & b.NorthWest3()
-	rd4 := b & b.NorthEast() & b.NorthEast2() & b.NorthEast3()
+func (b bitboard) hasConnect4() bool {
+	v4 := b & b.north() & b.north2() & b.north3()
+	h4 := b & b.east() & b.east2() & b.east3()
+	ld4 := b & b.northWest() & b.northWest2() & b.northWest3()
+	rd4 := b & b.northEast() & b.northEast2() & b.northEast3()
 	return (v4 | h4 | ld4 | rd4) != 0
 }
 
-// Count returns the number of 1 in the bitboard.
-func (b bitboard) Count() int {
+// count returns the number of 1 in the bitboard.
+func (b bitboard) count() int {
 	return bits.OnesCount64(uint64(b))
 }
 
@@ -144,7 +140,7 @@ func (b bitboard) getColumn(column int) byte {
 // RotateLeft rotates the bitboard 90 degrees left.
 //
 // It proceeds column by column, using rotationLookup (lazy dev 😁).
-func (b bitboard) RotateLeft() bitboard {
+func (b bitboard) rotateLeft() bitboard {
 	var rotatedBitboard bitboard
 	for column := 0; column < 8; column++ {
 		rotatedBitboard |= rotationLookup[b.getColumn(column)] << column

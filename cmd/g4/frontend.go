@@ -40,8 +40,7 @@ type mainModel struct {
 }
 
 func NewFrontend(descr string) mainModel {
-	board, _ := bitsim.FromString("8|8|8|8|8|8|8|8")
-	game, _ := bitsim.FromBoard(board, g4.Yellow)
+	game, _ := bitsim.FromString(bitsim.StartingPosition, g4.Yellow)
 	moves, _ := game.Generate()
 	return mainModel{
 		descr: descr,

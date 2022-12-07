@@ -2,6 +2,8 @@ package bitsim
 
 import (
 	"fmt"
+	"g4"
+	"strconv"
 	"strings"
 )
 
@@ -14,14 +16,11 @@ const (
 	col5Mask bitboard = col4Mask << 8
 	col6Mask bitboard = col5Mask << 8
 	col7Mask bitboard = col6Mask << 8
+	// StartingPosition represents the empty g4 board.
+	StartingPosition string = "8|8|8|8|8|8|8|8"
 )
 
-type Board struct {
-	yellowBits bitboard
-	redBits    bitboard
-}
-
-// FromString returns a board built from a description string.
+// boardFromString returns a board built from a description string.
 //
 // Format is the following:
 // col1|col2|col3|...|col8
@@ -31,7 +30,7 @@ type Board struct {
 //
 // NB: multiple integers one after the other is also valid.
 // example: y7|... is equivalent to y1123|... or r43|...
-func FromString(s string) (b Board, err error) {
+func boardFromString(s string) (b Board, err error) {
 	// Parse yellow bits.
 	yellowString := strings.ReplaceAll(
 		strings.ReplaceAll(s, "r", "1"),
@@ -55,26 +54,125 @@ func FromString(s string) (b Board, err error) {
 	return
 }
 
-// Heights returns a list of heights for all the columns.
-func (b Board) Heights() [8]int {
+type Board struct {
+	yellowBits bitboard
+	redBits    bitboard
+}
+
+// ToArray returns an array representation of the board.
+func (b Board) ToArray() [8][8]g4.Color {
+	var array [8][8]g4.Color
+	// Beware the coordinates system is not the same as for bitboards.
+	for row := 0; row < 8; row++ {
+		for col := 0; col < 8; col++ {
+			mask := one << (row + 8*col)
+			if b.redBits&mask != 0 {
+				array[col][7-row] = g4.Red
+			} else if b.yellowBits&mask != 0 {
+				array[col][7-row] = g4.Yellow
+			} else {
+				array[col][7-row] = g4.Empty
+			}
+		}
+	}
+	return array
+}
+
+// String returns the string representation of the board.
+func (b Board) String() string {
+	s := ""
+	for col := 0; col < 8; col++ {
+		void := 0
+		for row := 0; row < 8; row++ {
+			mask := one << (row + 8*col)
+			if b.redBits&mask != 0 {
+				if void > 0 {
+					s += strconv.Itoa(void)
+					void = 0
+				}
+				s += "r"
+			} else if b.yellowBits&mask != 0 {
+				if void > 0 {
+					s += strconv.Itoa(void)
+					void = 0
+				}
+				s += "y"
+			} else {
+				void++
+			}
+		}
+		if void > 0 {
+			s += strconv.Itoa(void)
+		}
+		if col < 7 {
+			s += "|"
+		}
+	}
+	return s
+}
+
+// heights returns a list of heights for all the columns.
+func (b Board) heights() [8]int {
 	return [8]int{
-		((b.yellowBits | b.redBits) & col0Mask).Count(),
-		((b.yellowBits | b.redBits) & col1Mask).Count(),
-		((b.yellowBits | b.redBits) & col2Mask).Count(),
-		((b.yellowBits | b.redBits) & col3Mask).Count(),
-		((b.yellowBits | b.redBits) & col4Mask).Count(),
-		((b.yellowBits | b.redBits) & col5Mask).Count(),
-		((b.yellowBits | b.redBits) & col6Mask).Count(),
-		((b.yellowBits | b.redBits) & col7Mask).Count(),
+		((b.yellowBits | b.redBits) & col0Mask).count(),
+		((b.yellowBits | b.redBits) & col1Mask).count(),
+		((b.yellowBits | b.redBits) & col2Mask).count(),
+		((b.yellowBits | b.redBits) & col3Mask).count(),
+		((b.yellowBits | b.redBits) & col4Mask).count(),
+		((b.yellowBits | b.redBits) & col5Mask).count(),
+		((b.yellowBits | b.redBits) & col6Mask).count(),
+		((b.yellowBits | b.redBits) & col7Mask).count(),
 	}
 }
 
-// HasYellowConnect4 returns whether the board has a connect 4 with yellow tokens.
-func (b Board) HasYellowConnect4() bool {
-	return b.yellowBits.HasConnect4()
+// hasYellowConnect4 returns whether the board has a connect 4 with yellow tokens.
+func (b Board) hasYellowConnect4() bool {
+	return b.yellowBits.hasConnect4()
 }
 
-// HasRedConnect4 returns whether the board has a connect 4 with red tokens.
-func (b Board) HasRedConnect4() bool {
-	return b.redBits.HasConnect4()
+// hasRedConnect4 returns whether the board has a connect 4 with red tokens.
+func (b Board) hasRedConnect4() bool {
+	return b.redBits.hasConnect4()
+}
+
+// RotateLeft applies `times` left rotations on the board.
+//
+// It does not make the token drop according to new gravity.
+func (b Board) RotateLeft(times int) Board {
+	for k := 0; k < times%4; k++ {
+		b.yellowBits = b.yellowBits.rotateLeft()
+		b.redBits = b.redBits.rotateLeft()
+	}
+	return b
+}
+
+// ApplyGravity makes the token drop according to gravity.
+//
+// Uses the naive approach:
+//   - computes bits with a gap immediately below them
+//   - drop one square
+//   - iterate (8 times)
+func (b Board) ApplyGravity() Board {
+	for k := 0; k < 8; k++ {
+		gaps := ^(b.yellowBits | b.redBits)
+		yellowDrop := gaps & b.yellowBits.south()
+		b.yellowBits = (b.yellowBits ^ yellowDrop.north()) | yellowDrop
+		redDrop := gaps & b.redBits.south()
+		b.redBits = (b.redBits ^ redDrop.north()) | redDrop
+	}
+	return b
+}
+
+// AddToken adds a token on top of requested column.
+func (b Board) AddToken(column int, color g4.Color) Board {
+	height := b.heights()[column]
+	if height < 8 {
+		switch color {
+		case g4.Yellow:
+			b.yellowBits |= one << (height + column*8)
+		case g4.Red:
+			b.redBits |= one << (height + column*8)
+		}
+	}
+	return b
 }
