@@ -330,6 +330,8 @@ func TestBoardAddToken(t *testing.T) {
 // Benchmarks the performance of the String method.
 //
 // Before switching to strings.Builder, it would do 10x more allocations and be twice as slow.
+//
+// Note: if needed, the old ToArray method was twice as fast (no allocation, no Itoa).
 func BenchmarkBoardString(b *testing.B) {
 	examples := []string{
 		"8|8|8|8|8|8|8|8",

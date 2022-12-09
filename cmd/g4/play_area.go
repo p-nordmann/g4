@@ -2,6 +2,7 @@ package main
 
 import (
 	"g4"
+	"g4/bitsim"
 	"image"
 	"image/color"
 
@@ -36,6 +37,42 @@ func paintCircle(x, y int, w int, col color.RGBA, img *image.RGBA) {
 	}
 }
 
+func toArray(b bitsim.Board) (array [8][8]g4.Color) {
+	var col, row int
+	for _, c := range b.String() {
+		switch c {
+		case '|':
+			row = 0
+			col++
+		case 'r':
+			array[col][7-row] = g4.Red
+			row++
+		case 'y':
+			array[col][7-row] = g4.Yellow
+			row++
+		case '1':
+			row += 1
+		case '2':
+			row += 2
+		case '3':
+			row += 3
+		case '4':
+			row += 4
+		case '5':
+			row += 5
+		case '6':
+			row += 6
+		case '7':
+			row += 7
+		case '8':
+			row += 8
+		default:
+			return
+		}
+	}
+	return
+}
+
 func arrayToImage(array [8][8]g4.Color, squareWidth, stride int) image.Image {
 	rect := image.Rectangle{
 		Min: image.Point{0, 0},
@@ -67,19 +104,19 @@ func arrayToImage(array [8][8]g4.Color, squareWidth, stride int) image.Image {
 }
 
 type playArea struct {
-	Board [8][8]g4.Color
+	board bitsim.Board
 }
 
 type previewArea struct {
-	Board [8][8]g4.Color
+	board bitsim.Board
 }
 
 func (m playArea) View() string {
-	img := arrayToImage(m.Board, squareWidth, stride)
+	img := arrayToImage(toArray(m.board), squareWidth, stride)
 	return ti.ToString(8*squareWidth+7*stride, img)
 }
 
 func (m previewArea) View() string {
-	img := arrayToImage(m.Board, squareWidthPreview, stridePreview)
+	img := arrayToImage(toArray(m.board), squareWidthPreview, stridePreview)
 	return ti.ToString(8*squareWidthPreview+7*stridePreview, img)
 }

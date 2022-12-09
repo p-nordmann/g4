@@ -89,7 +89,7 @@ func (m *mainModel) updateMove(move g4.Move) error {
 		return err
 	}
 	m.game = game
-	m.board.Board = game.Board.ToArray()
+	m.board.board = game.Board
 	if m.colorWithMove == g4.Yellow {
 		m.colorWithMove = g4.Red
 	} else {
@@ -103,7 +103,7 @@ func (m *mainModel) updateMove(move g4.Move) error {
 	if err != nil {
 		return err
 	}
-	m.preview.Board = m.game.Board.ToArray()
+	m.preview.board = m.game.Board
 	return nil
 }
 
@@ -182,7 +182,7 @@ func (m mainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		//	it will trigger the following.
 		if !m.selector.Disabled && m.selector.SelectedMove >= 0 {
 			game, _ := m.game.Apply(m.selector.PossibleMoves[m.selector.SelectedMove])
-			m.preview.Board = game.Board.ToArray()
+			m.preview.board = game.Board
 		}
 		return m, cmd
 	}
