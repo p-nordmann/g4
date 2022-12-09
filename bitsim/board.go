@@ -80,35 +80,35 @@ func (b Board) ToArray() [8][8]g4.Color {
 
 // String returns the string representation of the board.
 func (b Board) String() string {
-	s := ""
+	var s strings.Builder
 	for col := 0; col < 8; col++ {
 		void := 0
 		for row := 0; row < 8; row++ {
 			mask := one << (row + 8*col)
 			if b.redBits&mask != 0 {
 				if void > 0 {
-					s += strconv.Itoa(void)
+					s.WriteString(strconv.Itoa(void))
 					void = 0
 				}
-				s += "r"
+				s.WriteString("r")
 			} else if b.yellowBits&mask != 0 {
 				if void > 0 {
-					s += strconv.Itoa(void)
+					s.WriteString(strconv.Itoa(void))
 					void = 0
 				}
-				s += "y"
+				s.WriteString("y")
 			} else {
 				void++
 			}
 		}
 		if void > 0 {
-			s += strconv.Itoa(void)
+			s.WriteString(strconv.Itoa(void))
 		}
 		if col < 7 {
-			s += "|"
+			s.WriteString("|")
 		}
 	}
-	return s
+	return s.String()
 }
 
 // heights returns a list of heights for all the columns.

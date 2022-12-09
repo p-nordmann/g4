@@ -327,4 +327,23 @@ func TestBoardAddToken(t *testing.T) {
 	}
 }
 
-// TODO: benchmark Board.String.
+// Benchmarks the performance of the String method.
+//
+// Before switching to strings.Builder, it would do 10x more allocations and be twice as slow.
+func BenchmarkBoardString(b *testing.B) {
+	examples := []string{
+		"8|8|8|8|8|8|8|8",
+		"y7|8|8|8|8|8|8|8",
+		"r6r|8|8|8|8|yyyyyyyy|8|8",
+		"8|8|8|8|rrryr3|ryyyyyr1|r7|yr6",
+		"y6y|8|8|8|8|yyy2ryy|8|8",
+	}
+	for _, ex := range examples {
+		board, _ := FromString(ex)
+		b.Run(ex, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				board.String()
+			}
+		})
+	}
+}
