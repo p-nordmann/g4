@@ -13,6 +13,7 @@ import (
 )
 
 const (
+	// maxColorTries denotes the limit to the number of attempts at choosing a color.
 	maxColorTries = 100
 )
 

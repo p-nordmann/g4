@@ -9,22 +9,21 @@ func handleError(err error) tea.Cmd {
 	return func() tea.Msg { return err }
 }
 
-type errorModel struct {
-	err      error
-	position string
+type ErrorModel struct {
+	err error
 }
 
-func (m errorModel) View() string {
-	return m.err.Error() + "\n" + m.position + "\n" + "Press 'q' to quit."
+func (m ErrorModel) View() string {
+	return m.err.Error() + "\n" + "Press 'q' to quit."
 }
 
-func (m errorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m ErrorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if isQuitMessage(msg) {
 		return m, tea.Quit
 	}
 	return m, nil
 }
 
-func (m errorModel) Init() tea.Cmd {
+func (m ErrorModel) Init() tea.Cmd {
 	return nil
 }
