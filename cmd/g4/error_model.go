@@ -5,7 +5,9 @@ import (
 )
 
 func handleError(err error) tea.Cmd {
-	p2pService.ch.Close()
+	if p2pService.ch != nil {
+		p2pService.ch.Close()
+	}
 	return func() tea.Msg { return err }
 }
 
