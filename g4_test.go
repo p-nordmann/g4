@@ -48,10 +48,10 @@ func TestErrorInvalidMove(t *testing.T) {
 
 func TestMoveMaker(t *testing.T) {
 	got := []g4.Move{
-		g4.Base().Tilt().Gravity(g4.UP),
-		g4.Base().Tilt().Gravity(g4.DOWN),
-		g4.Base().Token().Color(g4.Yellow).Column(3),
-		g4.Base().Token().Color(g4.Red).Column(0),
+		g4.Move{}.Tilt().Gravity(g4.UP),
+		g4.Move{}.Tilt().Gravity(g4.DOWN),
+		g4.Move{}.Token().Color(g4.Yellow).Column(3),
+		g4.Move{}.Token().Color(g4.Red).Column(0),
 	}
 	want := []g4.Move{
 		{Type: g4.Tilt, Direction: g4.UP},

@@ -291,6 +291,6 @@ func makeMove(combo string, color g4.Color) g4.Move {
 	case ":right":
 		return g4.TiltMove(color, g4.RIGHT)
 	default:
-		return g4.Base()
+		return g4.Move{}
 	}
 }

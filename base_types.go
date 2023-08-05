@@ -1,12 +1,8 @@
 package g4
 
 // Color describes the color of a token.
-//
-// There are really only two colors available but
-// as we work with 64-bit machines we might as well use memory.
 type Color byte
 
-// TODO: might be useful to use 1 << iota to be able to denote multiple colors in a single variable.
 const (
 	Empty Color = iota
 	Yellow
@@ -47,10 +43,6 @@ type Move struct {
 	Col Color
 }
 
-func Base() Move {
-	return Move{}
-}
-
 func (m Move) Token() Move {
 	m.Type = Token
 	return m
@@ -77,11 +69,11 @@ func (m Move) Gravity(gravity Direction) Move {
 }
 
 func TokenMove(color Color, column int) Move {
-	return Base().Token().Color(color).Column(column)
+	return Move{}.Token().Color(color).Column(column)
 }
 
 func TiltMove(color Color, direction Direction) Move {
-	return Base().Color(color).Tilt().Gravity(direction)
+	return Move{}.Color(color).Tilt().Gravity(direction)
 }
 
 type ErrorGameOver Color
