@@ -9,7 +9,13 @@ const (
 	Red
 )
 
-// Direction describes the direction of gravity.
+type MoveType byte
+
+const (
+	Token MoveType = iota // A move that places a new token on top of a column.
+	Tilt                  // A move that changes the direction of gravity.
+)
+
 type Direction int
 
 const (
@@ -18,18 +24,11 @@ const (
 	RIGHT
 )
 
-type MoveType byte
-
-const (
-	Token MoveType = iota // A move that places a new token on top of a column.
-	Tilt                  // A move that changes the direction of gravity.
-)
-
 type Move struct {
+	Color     Color
 	Type      MoveType
 	Direction Direction
 	Column    int
-	Color     Color
 }
 
 func TokenMove(color Color, column int) Move {
