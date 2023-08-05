@@ -139,7 +139,7 @@ func (b bitboard) getColumn(column int) byte {
 
 // RotateLeft rotates the bitboard 90 degrees left.
 //
-// It proceeds column by column, using rotationLookup (lazy dev 😁).
+// It proceeds column by column, using rotationLookup.
 func (b bitboard) rotateLeft() bitboard {
 	var rotatedBitboard bitboard
 	for column := 0; column < 8; column++ {

@@ -8,9 +8,6 @@ import (
 type Game struct {
 
 	// Board holds the state of the board.
-	//
-	// TODO: inheritance instead of attribute?
-	// TODO: maybe use an interface so it could apply to 2/3-player boards?
 	Board Board
 
 	// Mover denotes the player with the move.
@@ -22,9 +19,6 @@ func (g Game) Generate() ([]g4.Move, error) {
 	var moves []g4.Move
 
 	// Look for connect 4s.
-	//
-	// TODO: maybe use a single method board.hasConnect4() []g4.Color?
-	// 	(or g4.Color with flags like Red | Yellow for multiple colors)
 	hasYellowConnect4 := g.Board.hasYellowConnect4()
 	hasRedConnect4 := g.Board.hasRedConnect4()
 	if hasYellowConnect4 && hasRedConnect4 {
@@ -42,7 +36,12 @@ func (g Game) Generate() ([]g4.Move, error) {
 	}
 
 	// Tilt moves.
-	moves = append(moves, g4.TiltMove(g4.LEFT), g4.TiltMove(g4.DOWN), g4.TiltMove(g4.RIGHT))
+	moves = append(
+		moves,
+		g4.TiltMove(g.Mover, g4.LEFT),
+		g4.TiltMove(g.Mover, g4.DOWN),
+		g4.TiltMove(g.Mover, g4.RIGHT),
+	)
 
 	// Token moves.
 	for column, height := range heights {
@@ -83,8 +82,6 @@ func (g Game) Apply(move g4.Move) (Game, error) {
 	}
 
 	// Switch Mover.
-	//
-	// TODO: find a method that also works for 3 players?
 	if g.Mover == g4.Red {
 		g.Mover = g4.Yellow
 	} else {
