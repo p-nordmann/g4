@@ -158,10 +158,8 @@ func (app AppModel) View() string {
 		pStyle.Render(":1 :2 :3 :4 :5 :6 :7 :8"),
 		hStyle.Render("Tilt moves"),
 		pStyle.Render(":left :down :right"),
-		hStyle.Render("Settings"),
-		pStyle.Render(":,"),
 		hStyle.Render("Quit"),
-		pStyle.Render("q or ctrl+c"),
+		pStyle.Render(":q or ctrl+c"),
 	)
 
 	rightPanel := lipgloss.NewStyle().Padding(1).Render(controls)
@@ -230,9 +228,8 @@ type KeyHandler struct {
 }
 
 var defaultKeymap = map[string]string{
-	"q":       "quit",
+	": q":     "quit",
 	"ctrl+c":  "quit",
-	"ctrl+,":  "settings",
 	": 1":     ":1",
 	": 2":     ":2",
 	": 3":     ":3",
