@@ -1,7 +1,5 @@
 package g4
 
-import "fmt"
-
 // Color describes the color of a token.
 //
 // There are really only two colors available but
@@ -47,26 +45,6 @@ type Move struct {
 	ColumnIdx int
 	// Col indicates the color that was played for a token move.
 	Col Color
-}
-
-func (m Move) String() string {
-	if m.Type == Token {
-		return fmt.Sprint(m.ColumnIdx)
-	}
-	if m.Type == Tilt {
-		switch m.Direction {
-		case UP:
-			return "-"
-		case LEFT:
-			return "<90"
-		case RIGHT:
-			return "90>"
-		case DOWN:
-			return "180"
-
-		}
-	}
-	return "Unknown"
 }
 
 func Base() Move {
