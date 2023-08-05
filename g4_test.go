@@ -46,26 +46,6 @@ func TestErrorInvalidMove(t *testing.T) {
 	}
 }
 
-func TestMoveMaker(t *testing.T) {
-	got := []g4.Move{
-		g4.Move{}.Tilt().Gravity(g4.UP),
-		g4.Move{}.Tilt().Gravity(g4.DOWN),
-		g4.Move{}.Token().Color(g4.Yellow).Column(3),
-		g4.Move{}.Token().Color(g4.Red).Column(0),
-	}
-	want := []g4.Move{
-		{Type: g4.Tilt, Direction: g4.UP},
-		{Type: g4.Tilt, Direction: g4.DOWN},
-		{Type: g4.Token, Col: g4.Yellow, ColumnIdx: 3},
-		{Type: g4.Token, Col: g4.Red, ColumnIdx: 0},
-	}
-	for k := range got {
-		if got[k] != want[k] {
-			t.Errorf("example %d: got %v but want %v", k, got[k], want[k])
-		}
-	}
-}
-
 func TestShorthands(t *testing.T) {
 	got := []g4.Move{
 		g4.TiltMove(g4.Yellow, g4.UP),
@@ -74,10 +54,10 @@ func TestShorthands(t *testing.T) {
 		g4.TokenMove(g4.Red, 0),
 	}
 	want := []g4.Move{
-		{Type: g4.Tilt, Col: g4.Yellow, Direction: g4.UP},
-		{Type: g4.Tilt, Col: g4.Red, Direction: g4.DOWN},
-		{Type: g4.Token, Col: g4.Yellow, ColumnIdx: 3},
-		{Type: g4.Token, Col: g4.Red, ColumnIdx: 0},
+		{Type: g4.Tilt, Color: g4.Yellow, Direction: g4.UP},
+		{Type: g4.Tilt, Color: g4.Red, Direction: g4.DOWN},
+		{Type: g4.Token, Color: g4.Yellow, Column: 3},
+		{Type: g4.Token, Color: g4.Red, Column: 0},
 	}
 	for k := range got {
 		if got[k] != want[k] {

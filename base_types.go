@@ -26,49 +26,27 @@ const (
 	Tilt                  // A move that changes the direction of gravity.
 )
 
-// TODO: proper naming for attributes.
 type Move struct {
-	// Type indicates whether the move is a tilt or a token.
-	Type MoveType
-	// Direction indicates the new direction for a tilt move.
+	Type      MoveType
 	Direction Direction
-	// ColumnIdx indicates the column that was played for a token move.
-	ColumnIdx int
-	// Col indicates the color that was played for a token move.
-	Col Color
-}
-
-func (m Move) Token() Move {
-	m.Type = Token
-	return m
-}
-
-func (m Move) Tilt() Move {
-	m.Type = Tilt
-	return m
-}
-
-func (m Move) Column(column int) Move {
-	m.ColumnIdx = column
-	return m
-}
-
-func (m Move) Color(color Color) Move {
-	m.Col = color
-	return m
-}
-
-func (m Move) Gravity(gravity Direction) Move {
-	m.Direction = gravity
-	return m
+	Column    int
+	Color     Color
 }
 
 func TokenMove(color Color, column int) Move {
-	return Move{}.Token().Color(color).Column(column)
+	return Move{
+		Type:   Token,
+		Column: column,
+		Color:  color,
+	}
 }
 
 func TiltMove(color Color, direction Direction) Move {
-	return Move{}.Color(color).Tilt().Gravity(direction)
+	return Move{
+		Type:      Tilt,
+		Direction: direction,
+		Color:     color,
+	}
 }
 
 type ErrorGameOver Color
