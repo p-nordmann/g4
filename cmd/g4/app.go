@@ -95,6 +95,9 @@ func (app AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch combo {
 
 		case "quit":
+			if p2pService.ch != nil {
+				p2pService.ch.Close()
+			}
 			return app, tea.Quit
 
 		case ":1", ":2", ":3", ":4", ":5", ":6", ":7", ":8", ":left", ":down", ":right":
