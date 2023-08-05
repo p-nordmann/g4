@@ -70,13 +70,13 @@ func (g Game) Apply(move g4.Move) (Game, error) {
 		}
 		g.Board = g.Board.RotateLeft(times).ApplyGravity()
 	case g4.Token:
-		if move.ColumnIdx < 0 || move.ColumnIdx >= 8 {
+		if move.Column < 0 || move.Column >= 8 {
 			return g, g4.ErrorInvalidMove{}
 		}
-		if g.Board.heights()[move.ColumnIdx] == 8 {
+		if g.Board.heights()[move.Column] == 8 {
 			return g, g4.ErrorInvalidMove{}
 		}
-		g.Board = g.Board.AddToken(move.ColumnIdx, g.Mover)
+		g.Board = g.Board.AddToken(move.Column, g.Mover)
 	default:
 		return g, g4.ErrorInvalidMove{}
 	}

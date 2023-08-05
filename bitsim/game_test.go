@@ -74,17 +74,17 @@ func TestUtils(t *testing.T) {
 		},
 		{
 			in1: []g4.Move{g4.TokenMove(g4.Yellow, 2)},
-			in2: []g4.Move{g4.TokenMove(g4.Yellow, 2), g4.TiltMove(g4.Yellow, g4.UP)},
+			in2: []g4.Move{g4.TokenMove(g4.Yellow, 2), g4.TiltMove(g4.Yellow, g4.LEFT)},
 			out: false,
 		},
 		{
-			in1: []g4.Move{g4.TokenMove(g4.Yellow, 2), g4.TiltMove(g4.Red, g4.UP)},
-			in2: []g4.Move{g4.TokenMove(g4.Yellow, 2), g4.TiltMove(g4.Red, g4.UP)},
+			in1: []g4.Move{g4.TokenMove(g4.Yellow, 2), g4.TiltMove(g4.Red, g4.LEFT)},
+			in2: []g4.Move{g4.TokenMove(g4.Yellow, 2), g4.TiltMove(g4.Red, g4.LEFT)},
 			out: true,
 		},
 		{
-			in1: []g4.Move{g4.TokenMove(g4.Yellow, 2), g4.TiltMove(g4.Red, g4.UP)},
-			in2: []g4.Move{g4.TiltMove(g4.Red, g4.UP), g4.TokenMove(g4.Yellow, 2)},
+			in1: []g4.Move{g4.TokenMove(g4.Yellow, 2), g4.TiltMove(g4.Red, g4.LEFT)},
+			in2: []g4.Move{g4.TiltMove(g4.Red, g4.LEFT), g4.TokenMove(g4.Yellow, 2)},
 			out: true,
 		},
 	}
@@ -97,9 +97,9 @@ func TestUtils(t *testing.T) {
 	}
 
 	// Test tiltMoves and tokenMoves.
-	got := tiltMoves(g4.Yellow, []g4.Direction{g4.UP, g4.LEFT})
+	got := tiltMoves(g4.Yellow, []g4.Direction{g4.DOWN, g4.LEFT})
 	want := []g4.Move{
-		g4.TiltMove(g4.Yellow, g4.UP),
+		g4.TiltMove(g4.Yellow, g4.DOWN),
 		g4.TiltMove(g4.Yellow, g4.LEFT),
 	}
 	if !compareMoves(got, want) {
@@ -119,11 +119,11 @@ func TestUtils(t *testing.T) {
 
 	// Test concatMoves.
 	got = concatMoves(
-		tiltMoves(g4.Red, []g4.Direction{g4.UP, g4.LEFT}),
+		tiltMoves(g4.Red, []g4.Direction{g4.DOWN, g4.LEFT}),
 		tokenMoves(g4.Red, []int{0, 1, 5, 6}),
 	)
 	want = []g4.Move{
-		g4.TiltMove(g4.Red, g4.UP),
+		g4.TiltMove(g4.Red, g4.DOWN),
 		g4.TiltMove(g4.Red, g4.LEFT),
 		g4.TokenMove(g4.Red, 0),
 		g4.TokenMove(g4.Red, 1),
@@ -294,7 +294,7 @@ func TestApplyInvalidMoves(t *testing.T) {
 		{
 			in:    "8|8|8|8|8|8|8|8",
 			color: g4.Yellow,
-			move:  g4.TiltMove(g4.Yellow, g4.UP),
+			move:  g4.TiltMove(g4.Yellow, 8), // 8 should not be a valid direction
 			err:   g4.ErrorInvalidMove{},
 		},
 		{

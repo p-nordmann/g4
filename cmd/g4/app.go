@@ -95,6 +95,9 @@ func (app AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch combo {
 
 		case "quit":
+			if p2pService.ch != nil {
+				p2pService.ch.Close()
+			}
 			return app, tea.Quit
 
 		case ":1", ":2", ":3", ":4", ":5", ":6", ":7", ":8", ":left", ":down", ":right":
@@ -158,10 +161,8 @@ func (app AppModel) View() string {
 		pStyle.Render(":1 :2 :3 :4 :5 :6 :7 :8"),
 		hStyle.Render("Tilt moves"),
 		pStyle.Render(":left :down :right"),
-		hStyle.Render("Settings"),
-		pStyle.Render(":,"),
 		hStyle.Render("Quit"),
-		pStyle.Render("q or ctrl+c"),
+		pStyle.Render(":q or ctrl+c"),
 	)
 
 	rightPanel := lipgloss.NewStyle().Padding(1).Render(controls)
@@ -230,9 +231,8 @@ type KeyHandler struct {
 }
 
 var defaultKeymap = map[string]string{
-	"q":       "quit",
+	": q":     "quit",
 	"ctrl+c":  "quit",
-	"ctrl+,":  "settings",
 	": 1":     ":1",
 	": 2":     ":2",
 	": 3":     ":3",
@@ -291,6 +291,6 @@ func makeMove(combo string, color g4.Color) g4.Move {
 	case ":right":
 		return g4.TiltMove(color, g4.RIGHT)
 	default:
-		return g4.Base()
+		return g4.Move{}
 	}
 }
