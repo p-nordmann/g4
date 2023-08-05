@@ -12,7 +12,7 @@ import (
 func main() {
 	flag.Parse()
 	spec := flag.Arg(0)
-	board, _ := bitsim.FromString("ryry4|rrr5|yyy5|8|8|8|yyr5|4yyr1")
+	board, _ := bitsim.FromString(bitsim.StartingPosition)
 	p := tea.NewProgram(
 		AppModel{
 			spec:       spec,
