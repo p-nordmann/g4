@@ -13,8 +13,7 @@ const (
 type Direction int
 
 const (
-	UP Direction = iota
-	LEFT
+	LEFT Direction = iota
 	DOWN
 	RIGHT
 )
