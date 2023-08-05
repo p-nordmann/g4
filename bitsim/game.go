@@ -36,7 +36,12 @@ func (g Game) Generate() ([]g4.Move, error) {
 	}
 
 	// Tilt moves.
-	moves = append(moves, g4.TiltMove(g4.LEFT), g4.TiltMove(g4.DOWN), g4.TiltMove(g4.RIGHT))
+	moves = append(
+		moves,
+		g4.TiltMove(g.Mover, g4.LEFT),
+		g4.TiltMove(g.Mover, g4.DOWN),
+		g4.TiltMove(g.Mover, g4.RIGHT),
+	)
 
 	// Token moves.
 	for column, height := range heights {

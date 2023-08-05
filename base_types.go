@@ -102,8 +102,8 @@ func TokenMove(color Color, column int) Move {
 	return Base().Token().Color(color).Column(column)
 }
 
-func TiltMove(direction Direction) Move {
-	return Base().Tilt().Gravity(direction)
+func TiltMove(color Color, direction Direction) Move {
+	return Base().Color(color).Tilt().Gravity(direction)
 }
 
 type ErrorGameOver Color

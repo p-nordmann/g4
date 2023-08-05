@@ -22,10 +22,10 @@ func compareMoves(moves1 []g4.Move, moves2 []g4.Move) bool {
 	return true
 }
 
-func tiltMoves(directions []g4.Direction) []g4.Move {
+func tiltMoves(color g4.Color, directions []g4.Direction) []g4.Move {
 	var moves []g4.Move
 	for _, direction := range directions {
-		moves = append(moves, g4.TiltMove(direction))
+		moves = append(moves, g4.TiltMove(color, direction))
 	}
 	return moves
 }
@@ -74,17 +74,17 @@ func TestUtils(t *testing.T) {
 		},
 		{
 			in1: []g4.Move{g4.TokenMove(g4.Yellow, 2)},
-			in2: []g4.Move{g4.TokenMove(g4.Yellow, 2), g4.TiltMove(g4.UP)},
+			in2: []g4.Move{g4.TokenMove(g4.Yellow, 2), g4.TiltMove(g4.Yellow, g4.UP)},
 			out: false,
 		},
 		{
-			in1: []g4.Move{g4.TokenMove(g4.Yellow, 2), g4.TiltMove(g4.UP)},
-			in2: []g4.Move{g4.TokenMove(g4.Yellow, 2), g4.TiltMove(g4.UP)},
+			in1: []g4.Move{g4.TokenMove(g4.Yellow, 2), g4.TiltMove(g4.Red, g4.UP)},
+			in2: []g4.Move{g4.TokenMove(g4.Yellow, 2), g4.TiltMove(g4.Red, g4.UP)},
 			out: true,
 		},
 		{
-			in1: []g4.Move{g4.TokenMove(g4.Yellow, 2), g4.TiltMove(g4.UP)},
-			in2: []g4.Move{g4.TiltMove(g4.UP), g4.TokenMove(g4.Yellow, 2)},
+			in1: []g4.Move{g4.TokenMove(g4.Yellow, 2), g4.TiltMove(g4.Red, g4.UP)},
+			in2: []g4.Move{g4.TiltMove(g4.Red, g4.UP), g4.TokenMove(g4.Yellow, 2)},
 			out: true,
 		},
 	}
@@ -97,10 +97,10 @@ func TestUtils(t *testing.T) {
 	}
 
 	// Test tiltMoves and tokenMoves.
-	got := tiltMoves([]g4.Direction{g4.UP, g4.LEFT})
+	got := tiltMoves(g4.Yellow, []g4.Direction{g4.UP, g4.LEFT})
 	want := []g4.Move{
-		g4.TiltMove(g4.UP),
-		g4.TiltMove(g4.LEFT),
+		g4.TiltMove(g4.Yellow, g4.UP),
+		g4.TiltMove(g4.Yellow, g4.LEFT),
 	}
 	if !compareMoves(got, want) {
 		t.Errorf("tiltMoves: got %v but want %v", got, want)
@@ -119,12 +119,12 @@ func TestUtils(t *testing.T) {
 
 	// Test concatMoves.
 	got = concatMoves(
-		tiltMoves([]g4.Direction{g4.UP, g4.LEFT}),
+		tiltMoves(g4.Red, []g4.Direction{g4.UP, g4.LEFT}),
 		tokenMoves(g4.Red, []int{0, 1, 5, 6}),
 	)
 	want = []g4.Move{
-		g4.TiltMove(g4.UP),
-		g4.TiltMove(g4.LEFT),
+		g4.TiltMove(g4.Red, g4.UP),
+		g4.TiltMove(g4.Red, g4.LEFT),
 		g4.TokenMove(g4.Red, 0),
 		g4.TokenMove(g4.Red, 1),
 		g4.TokenMove(g4.Red, 5),
@@ -146,7 +146,7 @@ func TestGenerate(t *testing.T) {
 			in:    "8|8|8|8|8|8|8|8",
 			color: g4.Yellow,
 			out: concatMoves(
-				tiltMoves([]g4.Direction{g4.RIGHT, g4.DOWN, g4.LEFT}),
+				tiltMoves(g4.Yellow, []g4.Direction{g4.RIGHT, g4.DOWN, g4.LEFT}),
 				tokenMoves(g4.Yellow, []int{0, 1, 2, 3, 4, 5, 6, 7}),
 			),
 			err: nil,
@@ -155,7 +155,7 @@ func TestGenerate(t *testing.T) {
 			in:    "ryryryry|8|8|8|8|8|8|8",
 			color: g4.Yellow,
 			out: concatMoves(
-				tiltMoves([]g4.Direction{g4.RIGHT, g4.DOWN, g4.LEFT}),
+				tiltMoves(g4.Yellow, []g4.Direction{g4.RIGHT, g4.DOWN, g4.LEFT}),
 				tokenMoves(g4.Yellow, []int{1, 2, 3, 4, 5, 6, 7}),
 			),
 			err: nil,
@@ -164,7 +164,7 @@ func TestGenerate(t *testing.T) {
 			in:    "8|8|8|8|8|8|8|8",
 			color: g4.Yellow,
 			out: concatMoves(
-				tiltMoves([]g4.Direction{g4.LEFT, g4.RIGHT, g4.DOWN}),
+				tiltMoves(g4.Yellow, []g4.Direction{g4.LEFT, g4.RIGHT, g4.DOWN}),
 				tokenMoves(g4.Yellow, []int{0, 1, 2, 3, 4, 5, 6, 7}),
 			),
 			err: nil,
@@ -237,7 +237,7 @@ func TestApplyCorrectMoves(t *testing.T) {
 				g4.TokenMove(g4.Red, 1),
 				g4.TokenMove(g4.Yellow, 2),
 				g4.TokenMove(g4.Red, 3),
-				g4.TiltMove(g4.LEFT),
+				g4.TiltMove(g4.Yellow, g4.LEFT),
 			},
 			out:      "8|8|8|8|8|8|8|yryr4",
 			outColor: g4.Red,
@@ -246,7 +246,7 @@ func TestApplyCorrectMoves(t *testing.T) {
 			in:    "rr6|y7|r7|yy6|8|8|8|8",
 			color: g4.Yellow,
 			moves: []g4.Move{
-				g4.TiltMove(g4.LEFT),
+				g4.TiltMove(g4.Yellow, g4.LEFT),
 			},
 			out:      "8|8|8|8|8|8|ry6|ryry4",
 			outColor: g4.Red,
@@ -255,7 +255,7 @@ func TestApplyCorrectMoves(t *testing.T) {
 			in:    "rr6|y7|r7|yy6|8|8|8|8",
 			color: g4.Yellow,
 			moves: []g4.Move{
-				g4.TiltMove(g4.RIGHT),
+				g4.TiltMove(g4.Yellow, g4.RIGHT),
 			},
 			out:      "yryr4|yr6|8|8|8|8|8|8",
 			outColor: g4.Red,
@@ -294,7 +294,7 @@ func TestApplyInvalidMoves(t *testing.T) {
 		{
 			in:    "8|8|8|8|8|8|8|8",
 			color: g4.Yellow,
-			move:  g4.TiltMove(g4.UP),
+			move:  g4.TiltMove(g4.Yellow, g4.UP),
 			err:   g4.ErrorInvalidMove{},
 		},
 		{
