@@ -4,42 +4,25 @@ import (
 	"g4"
 	"g4/bitsim"
 
-	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
-// TODO: use a customizable color map.
-
-const (
-	yellow = "#aaaa00"
-	red    = "#dd0000"
-	grey   = "#7e1e5e"
-	dark   = "#0a0a0a" // TODO: transparent background for canvas.
-)
-
-// BoardModel is a model for displaying a g4 board.
-type BoardModel struct {
-	width, height int
-	game          bitsim.Game
-}
-
-func (m BoardModel) Init() tea.Cmd {
-	return nil
-}
-
-func (m BoardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if msg, ok := msg.(Size); ok {
-		m.width = msg.Width
-		m.height = msg.Height
+func min(x, y int) int {
+	if x <= y {
+		return x
 	}
-	return m, nil
+	return y
 }
 
-func (m BoardModel) View() string {
+type boardSize struct {
+	tokenSize int
+	stride    int
+}
 
+func fitBoard(spaceX, spaceY int) boardSize {
 	// Compute dimensions.
 	// If dimension is odd, decrement by one because it might not fit into the screen otherwise.
-	height := min(m.width, 2*m.height)
+	height := min(spaceX, 2*spaceY)
 	if height%2 == 1 {
 		height--
 	}
@@ -54,37 +37,29 @@ func (m BoardModel) View() string {
 	}
 	tokenSize := (height - 7*stride) / 8
 
-	// Center the canvas vertically and horizontally.
-	canvasSize := 8*tokenSize + 7*stride
-	if canvasSize%2 == 1 {
-		canvasSize++
+	return boardSize{
+		tokenSize: tokenSize,
+		stride:    stride,
 	}
-	verticalPadding := m.height - canvasSize/2
-	horizontalPadding := m.width - canvasSize
-	return lipgloss.NewStyle().
-		MarginTop(verticalPadding / 2).
-		MarginBottom(verticalPadding - verticalPadding/2).
-		MarginLeft(horizontalPadding / 2).
-		Render(m.draw(tokenSize, stride))
 }
 
-func (m BoardModel) draw(tokenSize, stride int) string {
+func drawBoard(board bitsim.Board, s boardSize) string {
 
-	size := 8*tokenSize + 7*stride
+	size := 8*s.tokenSize + 7*s.stride
 
 	// Get the board's array representation.
-	array := toArray(m.game.Board)
+	array := toArray(board)
 
 	// Draw the board on a CanvasView.
-	canvas := NewCanvas(size, size, lipgloss.Color(dark))
+	canvas := NewCanvas(size, size, dark)
 	for i := range array {
 		for j := range array[i] {
 			// Draw a nice square between holes.
-			if stride > 0 && i > 0 && j > 0 {
+			if s.stride > 0 && i > 0 && j > 0 {
 				canvas.DrawPatch(
-					tokenSize*i+stride*(i-1),
-					tokenSize*j+stride*(j-1),
-					makeSquaredPatch(stride, lipgloss.Color(grey)),
+					s.tokenSize*i+s.stride*(i-1),
+					s.tokenSize*j+s.stride*(j-1),
+					makeSquaredPatch(s.stride, pink),
 				)
 			}
 
@@ -93,15 +68,15 @@ func (m BoardModel) draw(tokenSize, stride int) string {
 			switch array[i][j] {
 			case g4.Yellow:
 				canvas.DrawPatch(
-					(tokenSize+stride)*i,
-					(tokenSize+stride)*j,
-					makeCircularPatch(tokenSize, lipgloss.Color(yellow)),
+					(s.tokenSize+s.stride)*i,
+					(s.tokenSize+s.stride)*j,
+					makeCircularPatch(s.tokenSize, yellow),
 				)
 			case g4.Red:
 				canvas.DrawPatch(
-					(tokenSize+stride)*i,
-					(tokenSize+stride)*j,
-					makeCircularPatch(tokenSize, lipgloss.Color(red)),
+					(s.tokenSize+s.stride)*i,
+					(s.tokenSize+s.stride)*j,
+					makeCircularPatch(s.tokenSize, red),
 				)
 			}
 		}

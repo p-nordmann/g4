@@ -17,17 +17,6 @@ const (
 	maxColorTries = 100
 )
 
-// p2pService is a global instance of P2PService.
-//
-// We assume that it is thread-safe.
-var p2pService *P2PService
-
-func init() {
-	p2pService = &P2PService{
-		r: rand.New(rand.NewSource(time.Now().UnixNano())),
-	}
-}
-
 // service provides factories for p2p commands.
 //
 // Such a command will itself always return either a success message or an error.
@@ -35,6 +24,13 @@ func init() {
 type P2PService struct {
 	ch *p2p.Channel
 	r  *rand.Rand
+}
+
+// p2pService is a global instance of P2PService.
+//
+// We assume that it is thread-safe.
+var p2pService = &P2PService{
+	r: rand.New(rand.NewSource(time.Now().UnixNano())),
 }
 
 // connect builds a command that opens the p2p connection with opponent.
@@ -62,9 +58,7 @@ type ConnectionSuccessful struct{}
 //
 // It will repeatedly choose red or yellow at random, send it and wait for an answer from the peer.
 // When both colors are different it will terminate.
-//
-// TODO: use context?
-func (s *P2PService) chooseColor(ctx context.Context) (tea.Cmd, error) {
+func (s *P2PService) chooseColor() (tea.Cmd, error) {
 	if s.ch == nil {
 		return nil, errors.New("channel has not been created")
 	}
@@ -109,16 +103,12 @@ func (s *P2PService) sendMove(move g4.Move) (tea.Cmd, error) {
 		if err != nil {
 			return err
 		}
-		return SentMove(move)
+		return move
 	}, nil
 }
 
-type SentMove g4.Move
-
 // receiveMove builds a command that receives a move from the peer.
-//
-// TODO: use context.
-func (s *P2PService) receiveMove(ctx context.Context) (tea.Cmd, error) {
+func (s *P2PService) receiveMove() (tea.Cmd, error) {
 	if s.ch == nil {
 		return nil, errors.New("channel has not been created")
 	}
@@ -128,8 +118,6 @@ func (s *P2PService) receiveMove(ctx context.Context) (tea.Cmd, error) {
 		if err != nil {
 			return err
 		}
-		return ReceivedMove(move)
+		return move
 	}, nil
 }
-
-type ReceivedMove g4.Move

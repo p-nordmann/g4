@@ -9,22 +9,15 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-var descr string
-
-func init() {
-	flag.Parse()
-	descr = flag.Arg(0)
-}
-
 func main() {
+	flag.Parse()
+	spec := flag.Arg(0)
 	board, _ := bitsim.FromString("ryry4|rrr5|yyy5|8|8|8|yyr5|4yyr1")
 	p := tea.NewProgram(
 		AppModel{
-			descr:         descr,
-			game:          bitsim.Game{Board: board, Mover: g4.Yellow},
-			board:         BoardModel{game: bitsim.Game{Board: board, Mover: g4.Yellow}},
-			preview:       BoardModel{game: bitsim.Game{Board: board, Mover: g4.Yellow}},
-			selectedModel: selectedPreview,
+			spec:       spec,
+			game:       bitsim.Game{Board: board, Mover: g4.Yellow},
+			keyHandler: KeyHandler{keyMap: defaultKeymap},
 		},
 		tea.WithAltScreen(),
 	)

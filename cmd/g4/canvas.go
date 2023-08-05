@@ -6,22 +6,20 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-// TODO: use termenv without lipgloss.
-
-// CanvasView provides a view that draws an image.
-type CanvasView struct {
+// Canvas provides a view that draws an image.
+type Canvas struct {
 	width, height   int
 	backgroundColor lipgloss.Color
 	pixels          [][]lipgloss.Color
 }
 
 // Returns a new CanvasView object of requested size.
-func NewCanvas(width, height int, backgroundColor lipgloss.Color) *CanvasView {
+func NewCanvas(width, height int, backgroundColor lipgloss.Color) *Canvas {
 	pixels := make([][]lipgloss.Color, height)
 	for i := range pixels {
 		pixels[i] = make([]lipgloss.Color, width)
 	}
-	return &CanvasView{
+	return &Canvas{
 		width:           width,
 		height:          height,
 		pixels:          pixels,
@@ -30,7 +28,7 @@ func NewCanvas(width, height int, backgroundColor lipgloss.Color) *CanvasView {
 }
 
 // Draws a patch on the canvas.
-func (canvas *CanvasView) DrawPatch(x, y int, patch [][]lipgloss.Color) {
+func (canvas *Canvas) DrawPatch(x, y int, patch [][]lipgloss.Color) {
 	for i := range patch {
 		for j := range patch[i] {
 			if x+i < canvas.height && y+j < canvas.width {
@@ -65,7 +63,7 @@ func toString(line []tallPixel, backgroundColor lipgloss.Color) string {
 //
 // This is useful because each line in the console is 2-pixel tall. We need to group lines 2-by-2 in
 // order to draw the proper image in the console.
-func (canvas *CanvasView) preRender() [][]tallPixel {
+func (canvas *Canvas) preRender() [][]tallPixel {
 
 	// If height is odd, we must add an empty line at the top.
 	pixels := canvas.pixels
@@ -91,7 +89,7 @@ func (canvas *CanvasView) preRender() [][]tallPixel {
 	return tallPixels
 }
 
-func (canvas *CanvasView) View() string {
+func (canvas *Canvas) View() string {
 	tallPixels := canvas.preRender()
 	lines := make([]string, len(tallPixels))
 	for k := range tallPixels {
