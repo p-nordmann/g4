@@ -19,16 +19,11 @@ const (
 	RIGHT
 )
 
-// MoveType indicates the kind of a move.
-//
-// A move can be one of:
-//   - Tilt: changing the direction of the gravity.
-//   - Token: placing a new token on top of one column.
 type MoveType byte
 
 const (
-	Token MoveType = iota
-	Tilt
+	Token MoveType = iota // A move that places a new token on top of a column.
+	Tilt                  // A move that changes the direction of gravity.
 )
 
 // TODO: proper naming for attributes.
