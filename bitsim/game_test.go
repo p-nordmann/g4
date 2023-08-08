@@ -173,25 +173,25 @@ func TestGenerate(t *testing.T) {
 			in:    "ryryryry|ryryryry|ryryryry|yryryryr|yryryryr|yryryryr|ryryryry|ryryryry",
 			color: g4.Yellow,
 			out:   nil,
-			err:   g4.ErrorGameOver(g4.Empty),
+			err:   g4.Draw{},
 		},
 		{
 			in:    "rrrr4|yryr4|8|8|8|8|8|8",
 			color: g4.Yellow,
 			out:   nil,
-			err:   g4.ErrorGameOver(g4.Red),
+			err:   g4.RedWins{},
 		},
 		{
 			in:    "ryry4|ryyy4|r7|r7|8|8|8|8",
 			color: g4.Yellow,
 			out:   nil,
-			err:   g4.ErrorGameOver(g4.Red),
+			err:   g4.RedWins{},
 		},
 		{
 			in:    "ryry4|yryy4|rrr5|yyyr4|8|8|8|8",
 			color: g4.Yellow,
 			out:   nil,
-			err:   g4.ErrorGameOver(g4.Red),
+			err:   g4.RedWins{},
 		},
 	}
 	for k, ex := range examples {

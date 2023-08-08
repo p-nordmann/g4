@@ -22,17 +22,17 @@ func (g Game) Generate() ([]g4.Move, error) {
 	hasYellowConnect4 := g.Board.hasYellowConnect4()
 	hasRedConnect4 := g.Board.hasRedConnect4()
 	if hasYellowConnect4 && hasRedConnect4 {
-		return moves, g4.ErrorGameOver(g4.Empty) // Draw.
+		return moves, g4.Draw{}
 	} else if hasYellowConnect4 {
-		return moves, g4.ErrorGameOver(g4.Yellow)
+		return moves, g4.YellowWins{}
 	} else if hasRedConnect4 {
-		return moves, g4.ErrorGameOver(g4.Red)
+		return moves, g4.RedWins{}
 	}
 
 	// Check whether board is full.
 	heights := g.Board.heights()
 	if heights[0]+heights[1]+heights[2]+heights[3]+heights[4]+heights[5]+heights[6]+heights[7] == 64 {
-		return moves, g4.ErrorGameOver(g4.Empty) // Draw.
+		return moves, g4.Draw{}
 	}
 
 	// Tilt moves.
