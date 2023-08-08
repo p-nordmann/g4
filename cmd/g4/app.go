@@ -63,6 +63,9 @@ func (app AppModel) Init() tea.Cmd {
 }
 
 func handleError(err error) tea.Cmd {
+	if err == nil {
+		return nil
+	}
 	if p2pService.ch != nil {
 		p2pService.ch.Close()
 	}
