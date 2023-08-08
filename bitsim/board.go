@@ -92,6 +92,11 @@ func (b Board) String() string {
 	return s.String()
 }
 
+// Returns the total number of tokens on the board.
+func (b Board) count() int {
+	return b.yellowBits.count() + b.redBits.count()
+}
+
 // heights returns a list of heights for all the columns.
 func (b Board) heights() [8]int {
 	return [8]int{

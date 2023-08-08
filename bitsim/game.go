@@ -14,25 +14,35 @@ type Game struct {
 	Mover g4.Color
 }
 
+// Returns an error if game is over.
+func (g Game) Validate() error {
+	hasYellowConnect4 := g.Board.hasYellowConnect4()
+	hasRedConnect4 := g.Board.hasRedConnect4()
+
+	if hasYellowConnect4 && hasRedConnect4 {
+		return g4.Draw{}
+	}
+	if hasYellowConnect4 {
+		return g4.YellowWins{}
+	}
+	if hasRedConnect4 {
+		return g4.RedWins{}
+	}
+
+	if g.Board.count() == 64 {
+		return g4.Draw{}
+	}
+
+	return nil
+}
+
 // Generate computes the list of possible moves from a given position.
 func (g Game) Generate() ([]g4.Move, error) {
 	var moves []g4.Move
 
-	// Look for connect 4s.
-	hasYellowConnect4 := g.Board.hasYellowConnect4()
-	hasRedConnect4 := g.Board.hasRedConnect4()
-	if hasYellowConnect4 && hasRedConnect4 {
-		return moves, g4.Draw{}
-	} else if hasYellowConnect4 {
-		return moves, g4.YellowWins{}
-	} else if hasRedConnect4 {
-		return moves, g4.RedWins{}
-	}
-
-	// Check whether board is full.
-	heights := g.Board.heights()
-	if heights[0]+heights[1]+heights[2]+heights[3]+heights[4]+heights[5]+heights[6]+heights[7] == 64 {
-		return moves, g4.Draw{}
+	// Check that game is still live.
+	if err := g.Validate(); err != nil {
+		return moves, err
 	}
 
 	// Tilt moves.
@@ -44,7 +54,7 @@ func (g Game) Generate() ([]g4.Move, error) {
 	)
 
 	// Token moves.
-	for column, height := range heights {
+	for column, height := range g.Board.heights() {
 		if height < 8 {
 			moves = append(moves, g4.TokenMove(g.Mover, column))
 		}
@@ -55,7 +65,14 @@ func (g Game) Generate() ([]g4.Move, error) {
 
 // Apply performs a move from a game state.
 func (g Game) Apply(move g4.Move) (Game, error) {
+
+	// Check that game is still live.
+	if err := g.Validate(); err != nil {
+		return g, err
+	}
+
 	switch t := move.Type; t {
+
 	case g4.Tilt:
 		var times int
 		switch move.Direction {
@@ -69,6 +86,7 @@ func (g Game) Apply(move g4.Move) (Game, error) {
 			return g, g4.ErrorInvalidMove{}
 		}
 		g.Board = g.Board.RotateLeft(times).ApplyGravity()
+
 	case g4.Token:
 		if move.Column < 0 || move.Column >= 8 {
 			return g, g4.ErrorInvalidMove{}
@@ -77,8 +95,10 @@ func (g Game) Apply(move g4.Move) (Game, error) {
 			return g, g4.ErrorInvalidMove{}
 		}
 		g.Board = g.Board.AddToken(move.Column, g.Mover)
+
 	default:
 		return g, g4.ErrorInvalidMove{}
+
 	}
 
 	// Switch Mover.
@@ -88,5 +108,5 @@ func (g Game) Apply(move g4.Move) (Game, error) {
 		g.Mover = g4.Red
 	}
 
-	return g, nil
+	return g, g.Validate()
 }
