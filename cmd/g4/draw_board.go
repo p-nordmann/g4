@@ -59,7 +59,7 @@ func drawBoard(board bitsim.Board, s boardSize) string {
 				canvas.DrawPatch(
 					s.tokenSize*i+s.stride*(i-1),
 					s.tokenSize*j+s.stride*(j-1),
-					makeSquaredPatch(s.stride, pink),
+					makeSquaredPatch(s.stride, pinker),
 				)
 			}
 
