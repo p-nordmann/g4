@@ -86,7 +86,7 @@ func (app AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	// Modal takes precedence.
 	if app.modalContent != "" {
-		return handleModalEvents(app, msg)
+		app, msg = handleModalEvents(app, msg)
 	}
 
 	switch msg := msg.(type) {
@@ -144,6 +144,13 @@ func (app AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return app, tea.Quit
 
 		case ":1", ":2", ":3", ":4", ":5", ":6", ":7", ":8", ":left", ":down", ":right":
+			// Do nothing if game not in progress or if modal is open.
+			if app.connStatus != connected ||
+				app.gameStatus != inProgress ||
+				app.modalContent != "" {
+				break
+			}
+
 			// We generate the move with myColor and test it against legal moves.
 			move := makeMove(combo, app.myColor)
 			legalMoves, _ := app.game.Generate()

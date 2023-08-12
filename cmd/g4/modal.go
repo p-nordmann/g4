@@ -34,50 +34,33 @@ func viewModal(content string, hover bool) string {
 	)
 }
 
-// TODO handle errors here too
-func handleModalEvents(app AppModel, msg tea.Msg) (tea.Model, tea.Cmd) {
+func handleModalEvents(app AppModel, msg tea.Msg) (AppModel, tea.Msg) {
 	switch msg := msg.(type) {
 
 	case tea.MouseMsg:
 		btnX, btnY := computeBtnCoords(app)
 		switch msg.Type {
-
 		case tea.MouseMotion:
 			if isInsideBtn(msg.X, msg.Y, btnX, btnY) {
 				app.modalHover = true
 			} else {
 				app.modalHover = false
 			}
-
 		case tea.MouseLeft:
 			if isInsideBtn(msg.X, msg.Y, btnX, btnY) {
 				app = closeModal(app)
 			}
-
 		}
-
-	case tea.WindowSizeMsg:
-		app.height = msg.Height
-		app.width = msg.Width
+		return app, nil // nil stops propagation
 
 	case tea.KeyMsg:
-		combo := app.keyHandler.handle(msg.String())
-		app.debug = combo
-		switch combo {
-
-		case "enter":
+		if app.keyHandler.handle(msg.String()) == "enter" {
 			app = closeModal(app)
-
-		case "quit":
-			if p2pService.ch != nil {
-				p2pService.ch.Close()
-			}
-			return closeModal(app), tea.Quit
-
+			return app, nil // nil stops propagation
 		}
 	}
 
-	return app, nil
+	return app, msg
 }
 
 func closeModal(app AppModel) AppModel {
