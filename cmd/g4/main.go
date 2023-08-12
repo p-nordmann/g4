@@ -20,6 +20,7 @@ func main() {
 			keyHandler: KeyHandler{keyMap: defaultKeymap},
 			gameStatus: inProgress,
 			connStatus: connecting,
+			history:    make(map[bitsim.Game]int),
 		},
 		tea.WithAltScreen(),
 		tea.WithMouseAllMotion(),

@@ -47,6 +47,7 @@ type AppModel struct {
 
 	game    bitsim.Game
 	myColor g4.Color
+	history map[bitsim.Game]int
 
 	modalContent string
 	modalHover   bool
@@ -145,7 +146,11 @@ func (app AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			app.modalContent = "Game over!\nRed wins!"
 			app.gameStatus = redWins
 		case nil:
-			break
+			app.history[game]++
+			if app.history[game] == 3 {
+				app.modalContent = "Game over!\nThis is a draw by 3-fold repetition."
+				app.gameStatus = draw
+			}
 		default:
 			return app, handleError(err)
 		}
