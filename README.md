@@ -53,7 +53,6 @@ go install ./cmd/g4
 ## Known issues
 
 - On Windows, the game does not resize properly with the terminal. This is a known limitation of the underlying technology. Unfortunately, Windows does not propagate the resize events to the process. Some workaround can be found, but are not a priority at the moment.
-- No 3-fold repetition draws. Right now, the 3-fold repetition rule is not implemented. Coming soon!
 
 ## License
 
