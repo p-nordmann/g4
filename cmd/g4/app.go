@@ -81,7 +81,6 @@ func contains(target g4.Move, moves []g4.Move) bool {
 	return false
 }
 
-// TODO do not allow to make moves if game not in progress
 func (app AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	// Modal takes precedence.
@@ -124,6 +123,11 @@ func (app AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case g4.Move:
+		// If not in progress, do not allow moves.
+		if app.connStatus != connected || app.gameStatus != inProgress {
+			break
+		}
+
 		game, err := app.game.Apply(g4.Move(msg))
 		if err != nil {
 			app.debug = "err:" + err.Error()
