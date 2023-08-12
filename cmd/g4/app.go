@@ -66,9 +66,6 @@ func handleError(err error) tea.Cmd {
 	if err == nil {
 		return nil
 	}
-	if p2pService.ch != nil {
-		p2pService.ch.Close()
-	}
 	return func() tea.Msg { return err }
 }
 
@@ -89,6 +86,9 @@ func (app AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	switch msg := msg.(type) {
+
+	case nil:
+		return app, nil
 
 	case error:
 		app.debug = msg.Error()
