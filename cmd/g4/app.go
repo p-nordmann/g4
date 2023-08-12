@@ -123,18 +123,32 @@ func (app AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case g4.Move:
+		app.listening = false
+
 		// If not in progress, do not allow moves.
 		if app.connStatus != connected || app.gameStatus != inProgress {
 			break
 		}
 
 		game, err := app.game.Apply(g4.Move(msg))
-		if err != nil {
-			app.debug = "err:" + err.Error()
+		app.game = game
+
+		// Handle game over states.
+		switch err.(type) {
+		case g4.Draw:
+			app.modalContent = "Game over:\nThis is a draw."
+			app.gameStatus = draw
+		case g4.YellowWins:
+			app.modalContent = "Game over:\nYellow wins!"
+			app.gameStatus = yellowWins
+		case g4.RedWins:
+			app.modalContent = "Game over!\nRed wins!"
+			app.gameStatus = redWins
+		case nil:
+			break
+		default:
 			return app, handleError(err)
 		}
-		app.game = game
-		app.listening = false
 
 	case tea.KeyMsg:
 		combo := app.keyHandler.handle(msg.String())
