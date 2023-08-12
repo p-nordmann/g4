@@ -63,8 +63,8 @@ func (app AppModel) Init() tea.Cmd {
 }
 
 func handleError(err error) tea.Cmd {
-	if p2pService.ch != nil {
-		p2pService.ch.Close()
+	if err == nil {
+		return nil
 	}
 	return func() tea.Msg { return err }
 }
@@ -78,15 +78,17 @@ func contains(target g4.Move, moves []g4.Move) bool {
 	return false
 }
 
-// TODO do not allow to make moves if game not in progress
 func (app AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	// Modal takes precedence.
 	if app.modalContent != "" {
-		return handleModalEvents(app, msg)
+		app, msg = handleModalEvents(app, msg)
 	}
 
 	switch msg := msg.(type) {
+
+	case nil:
+		return app, nil
 
 	case error:
 		app.debug = msg.Error()
@@ -121,13 +123,32 @@ func (app AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case g4.Move:
+		app.listening = false
+
+		// If not in progress, do not allow moves.
+		if app.connStatus != connected || app.gameStatus != inProgress {
+			break
+		}
+
 		game, err := app.game.Apply(g4.Move(msg))
-		if err != nil {
-			app.debug = "err:" + err.Error()
+		app.game = game
+
+		// Handle game over states.
+		switch err.(type) {
+		case g4.Draw:
+			app.modalContent = "Game over:\nThis is a draw."
+			app.gameStatus = draw
+		case g4.YellowWins:
+			app.modalContent = "Game over:\nYellow wins!"
+			app.gameStatus = yellowWins
+		case g4.RedWins:
+			app.modalContent = "Game over!\nRed wins!"
+			app.gameStatus = redWins
+		case nil:
+			break
+		default:
 			return app, handleError(err)
 		}
-		app.game = game
-		app.listening = false
 
 	case tea.KeyMsg:
 		combo := app.keyHandler.handle(msg.String())
@@ -141,6 +162,13 @@ func (app AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return app, tea.Quit
 
 		case ":1", ":2", ":3", ":4", ":5", ":6", ":7", ":8", ":left", ":down", ":right":
+			// Do nothing if game not in progress or if modal is open.
+			if app.connStatus != connected ||
+				app.gameStatus != inProgress ||
+				app.modalContent != "" {
+				break
+			}
+
 			// We generate the move with myColor and test it against legal moves.
 			move := makeMove(combo, app.myColor)
 			legalMoves, _ := app.game.Generate()

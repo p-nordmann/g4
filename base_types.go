@@ -1,6 +1,5 @@
 package g4
 
-// Color describes the color of a token.
 type Color byte
 
 const (
@@ -47,17 +46,18 @@ func TiltMove(color Color, direction Direction) Move {
 	}
 }
 
-type ErrorGameOver Color
+type Draw struct{}
+type YellowWins struct{}
+type RedWins struct{}
 
-func (err ErrorGameOver) Error() string {
-	switch Color(err) {
-	case Yellow:
-		return "game is over - yellow wins"
-	case Red:
-		return "game is over - red wins"
-	default:
-		return "game is over - draw"
-	}
+func (err Draw) Error() string {
+	return "draw"
+}
+func (err YellowWins) Error() string {
+	return "yellow wins"
+}
+func (err RedWins) Error() string {
+	return "red wins"
 }
 
 type ErrorInvalidMove struct{}

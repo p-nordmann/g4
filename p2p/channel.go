@@ -136,7 +136,7 @@ func (ch *Channel) Close() error {
 
 func (ch *Channel) ReadJSON(v interface{}) error {
 	if ch.in == nil || ch.dec == nil {
-		return errors.New("channel not properly opened")
+		return errors.New("channel not properly opened (in)")
 	}
 	if err := ch.dec.Decode(v); err == io.EOF {
 		return errors.New("channel seems to be closed") // TODO: detect closing with a proper API.
@@ -148,7 +148,7 @@ func (ch *Channel) ReadJSON(v interface{}) error {
 
 func (ch *Channel) WriteJSON(v interface{}) error {
 	if ch.out == nil || ch.enc == nil {
-		return errors.New("channel not properly opened")
+		return errors.New("channel not properly opened (out)")
 	}
 	if err := ch.enc.Encode(v); err != nil {
 		return fmt.Errorf("error sending to peer: %w", err)
